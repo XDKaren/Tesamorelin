@@ -1,0 +1,2173 @@
+\documentclass[a4paper]{article}
+
+\usepackage{longtable}
+\usepackage{float} %before text body
+\usepackage{fullpage}
+\usepackage{multirow}
+\usepackage{changepage}
+\usepackage{amssymb,amsmath}
+\usepackage[hmargin=1.5cm,vmargin=2.0cm]{geometry}
+\usepackage{color}
+\usepackage{titlesec}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{enumerate}
+\usepackage{appendix}
+
+\newcommand{\GDS}{\textup{GDS}}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\begin{center}
+\begin{LARGE}
+{TESAMORELIN STUDY}\\[1em]
+{FINAL ANALYSIS REPORT}\\[2em]
+{DRAFT}\\[1em]
+\end{LARGE}
+\vspace{1cm}
+
+\Large
+{\bf STUDY TITLE:} 
+\vspace{0.1 cm}
+
+\Large
+Phase II Trial of Tesamorelin for Cognition in Aging HIV-Infected Persons\\
+A Two Center Clinical Trial Conducted at UCSD and USC
+\vspace{0.6 cm}
+
+\Large
+{\bf PRINCIPAL INVESTIGATORS:} 
+\vspace{0.1 cm}
+
+\Large
+Ronald Ellis, MD 
+\linebreak Michael Dube, MD
+\linebreak Fred Sattler, MD
+\linebreak Felicia Chow, MD
+\vspace{0.6 cm}
+
+\Large
+{\bf PROTOCOL STATISTICIAN:} 
+\vspace{0.1 cm}
+
+\Large
+Florin Vaida, PhD
+\vspace{0.6 cm}
+
+
+\Large
+{\bf ANALYST:} 
+\vspace{0.1 cm}
+
+\Large
+Keren Hu
+\vspace{0.6 cm}
+
+%\Large
+%{\bf MEETING DATE:} 
+%\vspace{0.1 cm}
+
+\Large
+%\today
+% May 12, 2020
+\vspace{0.6 cm}
+
+\Large
+{\bf DATE REPORT ISSUED:} 
+\vspace{0.1 cm}
+
+\Large
+\today
+\vspace{0.6 cm}
+
+
+\end{center}
+\pagebreak
+
+
+\tableofcontents
+\listoftables
+
+\clearpage
+
+\section{Study Overview}
+
+This is the final analysis report for the Tesamorelin study. 
+
+\textbf{Study design}: Tesamorelin study is a longitudinal prospective, randomized, controlled, open label, phase II clinical trial of Tesamorelin treatment to improve neurocognitive performance in  HIV+ patients with abdominal obesity and neurocognitive impairment.  A total N = 73 HIV+ individuals with abdominal obesity and neurocognitive impairment, over 40 years of age, were randomized in a ratio of 3:2 to Immediate Treatment versus Deferred Treatment arms.  The Immediate Treatment arm received daily 1.4 mg subcutaneous injection of Tesamorelin for 24 weeks (weeks 0-24).  The Deferred Treatment arm received daily 1.4 mg subcutaneous injection of Tesamorelin between weeks 24 and 48 of the study.  The primary endpoint of the study was week 24.  The last study visit is week 48.  
+Study visits ocurred only during the active Tesamorelin treatment and at the end of study, as follows: 
+Immediate Treatment arm - weeks 0, 2, 4, 12, 24, and 48; 
+Deferred Treatment arm - weeks 0, 24, 26, 28, 36, and 48.
+
+\textbf{Study Aims and Hypotheses}: 
+
+\underline{Aim 1}: Determine if 6-months of Tesamorelin treatment will significantly improve neurocognitive performance versus a concurrent no treatment group. 
+
+\underline{Aim 2}: Evaluate mechanisms by which Tesamorelin fosters improved cognition by measuring changes in VAT-volume, hippocampal volume and frontal white matter metabolites of neuronal integrity and inflammation (n-acetyl-aspartate, myoinositol, and choline).
+
+\textbf{Primary Outcomes and Analysis}: The primary study outcome is the continuous summary regression-based change score (sRCS) on a comprehensive neurocognitive test battery, between baseline and week 24.  
+The sRCS will be compared between the two treatment arms using the independent samples t-test, in an intent-to-treat analysis.
+
+
+\textbf{Impact of COVID19}: This clinical trial was impacted by COVID19.  
+During March 16, 2020 to late March, 2022 screening and enrollment were suspended.  
+In-person visits were replaced by televideo visits, except for lab safety and emergent adverse events. 
+Imaging visits and lumbar puncture procedures were put on hold.  
+Monitoring for adverse events of participants on treatment for Tesamorelin was done by tele and video conferencing 
+and direct face-to-face contact has been limited to participants new to study drug, and severe events requiring examination.  
+Screening and enrollment resumed in March, 2022, including imaging visits.
+
+\textbf{Changes in Study Conduct}: In the effort to ensure the best possible study accrual, and the collection of primary endpoint data at week 24 for the largest number of participants, during the last year of the study the study team suspended data collection for participants in the deferred arm after week 24.  
+These participants were provided access to drug for the 24-48 week period, but without data collection.  
+This effectively shortened the study period to 24 weeks for the final year of the study, and allowed an extended accrual period, and for the study resources to be used on a larger number of prospective participants.
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 1: Read data, data cleaning
+
+### Upload packages
+require(xtable)
+
+###  Read in data, create separate datasets, prepare datasets
+
+app46 = read.csv("Data/Appendix46codes.csv")
+app18 = read.csv("Data/Appendix18codes.csv")
+app28 = read.csv("Data/Appendix28codes.csv")
+app100 = read.csv("Data/Appendix100codes.csv")
+appCodes = rbind(app46, app18, app100)
+
+data_download_date = as.Date("12/18/2023", format="%m/%d/%Y") 
+date_prevdsmb = as.Date("6/30/2022", format="%m/%d/%Y")
+
+# Palm Springs Participants - final list - IS THIS ACCURATE?
+palmsprings.id =  c("28496", "28383", "28264", "19910", "11426", "11445",
+                    "11456", "11428", "11447", "11451", "11481", "28291",
+                    "CA425", "NM633", "28927", "29055", "CA608")
+
+tes = read.csv("Data/TESA dataset 2023-12-18.csv")
+
+# change variable names
+names(tes)[names(tes)=="Randomization_group"] = "arm"
+# remove records of individuals not randomized
+tes$arm[tes$arm==""] = NA
+#tes$arm = droplevels(tes$arm)
+tes = tes[!is.na(tes$arm),]
+# add site variable
+tes$site = ifelse(substr(tes$hnrcid, start=1, stop=1) == "E", "USC", "UCSD")
+tes$site[tes$hnrcid %in% palmsprings.id] = "Palm Springs"
+
+# vischedz in date form; create viskey
+tes$vischedz = as.Date(tes$vischedz, "%Y/%m/%d")  # vischedz is NA when visit_status = "missed", n=15
+tes$viskey = paste(tes$hnrcid, tes$visit) 
+
+
+## Add NB Questionnaires data
+# np includes most/all variables from tes, as well as additional questionnaire variables
+# np does not include all visits from tes
+
+np = read.csv("Data/TESA dataset 2023-12-18_w_qs.csv") # nrow=582; all p
+np$viskey = paste(np$hnrcid, np$visit)
+np = np[np$viskey %in% tes$viskey,]     # nrow=562, as many as unique tes$viskey
+# length(unique(np$viskey)) # 562 unique viskey
+npcols = 180-109
+tes[, ncol(tes)+(1:npcols)] = np[match(tes$viskey, np$viskey), 108+(1:npcols)]
+
+
+# Fix missing data (9999's, etc.) - updated for 2022
+tes$age[tes$age %in% c(888,999)] = NA
+tes$gender[tes$gender==9] = NA
+tes$education[tes$education %in% c(88,99)] = NA
+tes$nadir_CD4[tes$nadir_CD4 %in% c(88888, 99999) ] = NA
+tes$currently_on_arvs[tes$currently_on_arvs %in% c(8,9)] = NA
+tes$current_CD4[tes$current_CD4 == 9999] = NA
+tes$hcbwbc[tes$hcbwbc == 99.99] = NA
+tes$hcbhgb[tes$hcbhgb == 99.9] = NA
+tes$hcbplat[tes$hcbplat == 999999] = NA
+tes$cnbgluc[tes$cnbgluc %in% c(888.88, 999.99, 999)] = NA
+tes$cnburea[tes$cnburea %in% c(99.9, 999)] = NA
+tes$cnbcrea[tes$cnbcrea == 99.9] = NA
+tes$cnbbilt[tes$cnbbilt == 99.9] = NA
+tes$cnbsgot[tes$cnbsgot == 9999] = NA
+tes$cnbsgpt[tes$cnbsgpt == 9999] = NA
+tes$cnbchol[tes$cnbchol == 9999] = NA
+tes$cnbchdl[tes$cnbchdl %in% c(888, 999)] = NA
+tes$cnbcldl[tes$cnbcldl %in% c(888, 999)] = NA
+tes$cnbtrig[tes$cnbtrig %in% c(999, 9999)] = NA
+tes$cnbha1c[tes$cnbha1c %in% c(9.9, 99.9)] = NA
+tes$prvblot[tes$prvblot == 999] = NA
+tes$prvblob[tes$prvblob == 999] = NA
+tes$tvlswll[tes$tvlswll == 9] = NA
+# tes$tvleedm[tes$tvleedm == 9] = NA
+tes$qcwatc1[tes$qcwatc1 == 999] = NA
+tes$qcwatc2[tes$qcwatc2 == 999] = NA
+tes$qcwatc3[tes$qcwatc3 == 999] = NA
+tes$avbasln[tes$avbasln %in% c(8, 9)] = NA
+tes$avonstz[tes$avonstz %in% c("88/88/8888", "99/99/9999", "")] = NA
+tes$avofstz[tes$avofstz %in% c("88/88/8888", "99/99/9999", "")] = NA
+tes$avgrade[tes$avgrade %in% c(8, 9)] = NA
+tes$avthepy[tes$avthepy %in% c(8, 9)] = NA
+tes$avseris[tes$avseris %in% c(88, 99)] = NA
+tes$avarvch[tes$avarvch %in% c(8, 9)] = NA
+tes$avrelat[tes$avrelat %in% c(8, 9)] = NA
+tes$mnrxdos[tes$mnrxdos %in% c(88888.88889, 100000)] = NA
+tes$mnunits[tes$mnunits %in% c(8, 9)] = NA
+tes$mnrxfrq[tes$mnrxfrq %in% c(88888, 99999)] = NA
+tes$mnrxprn[tes$mnrxprn %in% c(8, 9)] = NA
+tes$mnrxstr[tes$mnrxstr %in% c(88/88/8888, 99/99/9999)] = NA
+tes$mnrxstp[tes$mnrxstp %in% c(88/88/8888, 99/99/9999)] = NA
+tes$mnlastz[tes$mnlastz %in% c(88/88/8888, 99/99/9999)] = NA
+tes$mnlastt[tes$mnlastt %in% c(88:88, 99:99, 9999)] = NA
+tes$mnlastd[tes$mnlastd %in% c(88888.88889, 100000, 9999, 99999.99999)] = NA
+tes$rqcompl[tes$rqcompl %in% c(888.888, 999.999, 888, 999)] = NA
+tes$rqrmber[tes$rqrmber %in% c(8, 9)] = NA
+
+datefix = function(tesdate){
+## Fix date entries: mix of two different date formats, f1="%Y/%m/%d" and f2="%m/%d/%Y"
+## Deal with 99/99 month/day, or missing year
+y = tesdate
+yy = strsplit(y, split="/")
+y1 = sapply(yy, function(x) x[1])
+y2 = sapply(yy, function(x) x[2])
+y3 = sapply(yy, function(x) x[3])
+y2[y2==99] = 15 # middle of the month for missing day
+y[y1=99] = y1[y1==99] = y2[y1==99] = y3[y1==99] = NA  # some entries have missing month & day, make them NA
+z1 = ifelse(y3 %in% 1900:2024, y3, y1) # year
+z2 = ifelse(y3 %in% 1900:2024, y1, y2) # month
+z3 = ifelse(y3 %in% 1900:2024, y2, y3) # day
+ymod = paste(z1,z2,z3, sep="/")
+ymod[ymod=="NA/NA/NA"] = NA
+return(yreturn = as.Date(ymod, format="%Y/%m/%d"))
+}
+
+#tes$avonstz = datefix(tes$avonstz)
+#tes$avofstz = datefix(tes$avofstz)
+#tes$mnrxstr = datefix(tes$mnrxstr)
+#tes$mnrxstp = datefix(tes$mnrxstp)
+#tes$mnlastz = datefix(tes$mnlastz)
+
+# create index and week variables
+tes$week = tes$visit
+tes$week[tes$week=="SC1"] = -4
+tes$week[tes$week=="PE1"] = -2
+tes$week = as.numeric(as.character(tes$week))
+
+tes$index = as.numeric(as.factor(tes$week))
+
+# tes$visit[tes$visit=="000"] = "0"
+# tes$visit[tes$visit=="002"] = "2"
+# tes$visit[tes$visit=="004"] = "4"
+# tes$visit[tes$visit=="012"] = "12"
+# tes$visit[tes$visit=="024"] = "24"
+# tes$visit[tes$visit=="026"] = "26"
+# tes$visit[tes$visit=="028"] = "28"
+# tes$visit[tes$visit=="036"] = "36"
+# tes$visit[tes$visit=="048"] = "48"
+
+
+# compare old and new datasets
+tesold = read.csv("Data/Tesamorelin-06102022.csv")
+names(tesold)[names(tesold)=="Randomization_group"] = "arm"
+tesold$arm[tesold$arm==""] = NA
+tesold = tesold[!is.na(tesold$arm),]
+tesold$vischedz = as.Date(tesold$vischedz, "%m/%d/%Y") # format for 2022 dataset
+tesold$viskey = paste(tesold$hnrcid, tesold$visit)
+
+visitsold = unique(tesold$viskey) # n=491 entries
+visits = unique(tes$viskey)       # n=562 entries
+visitsnew = visits[is.na(match(visits, visitsold))] # n=71; 562-491=71
+## 28927: 024 visit date changed from 2022-06-10 to 2022-06-15
+## CA608: 024 visit date changed from 2022-06-09 to 2022-09-13 - TO INQUIRE
+
+pids = unique(tes$hnrcid) # 73
+pidsold = unique(tesold$hnrcid) # 67
+pidsnew = pids[is.na(match(pids, pidsold))] # 6
+@
+
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 2: Create analysis datasets: baseline and longitudinal
+
+### 1. Create long format dataset (one row per visit per participant)
+visits = unique(tes$viskey)
+longdat = tes[match(visits, tes$viskey),] # dim=562 181
+longdat = longdat[longdat$visit_status %in% c("complete", "incomplete", "partial"),] # n=543
+
+
+### 2. Create baseline and endpoint dataset (one row per participant)
+basedat = tes[tes$visit=="PE1",] # 74 rows
+## check for repeat PE1 entries
+# if(dim(basedat)[1] != length(unique(basedat$hnrcid))) errorCondition("Repeat PE1 entries")
+### "28512" has 2 entries in PE1 visit
+basedat = basedat[match(unique(basedat$hnrcid), basedat$hnrcid),] # 73 rows
+
+# baseline RNA for E0041 not in database AP email 5/7/20
+basedat$rnvalue[basedat$hnrcid=="E0041"] = 20
+
+
+ld24 = longdat[longdat$visit=="024",]
+ld48 = longdat[longdat$visit=="048",]
+
+# Waist circumference at baseline, wk24, and wk48
+tes.sc1 = tes[tes$visit=="SC1",]
+basedat$qcwatc1 = tes.sc1$qcwatc1[match(basedat$hnrcid, tes.sc1$hnrcid)]
+basedat$qcwatc2 = tes.sc1$qcwatc2[match(basedat$hnrcid, tes.sc1$hnrcid)]
+basedat$qcwatc3 = tes.sc1$qcwatc3[match(basedat$hnrcid, tes.sc1$hnrcid)]
+basedat$wc0 = apply(basedat[, c("qcwatc1", "qcwatc2", "qcwatc3")], 1, mean, na.rm=TRUE)
+
+ld24$wc = apply(ld24[, c("qcwatc1", "qcwatc2", "qcwatc3")], 1, mean, na.rm=TRUE)
+basedat$wc24 = ld24$wc[match(basedat$hnrcid, ld24$hnrcid)]
+
+ld48$wc = apply(ld48[, c("qcwatc1", "qcwatc2", "qcwatc3")], 1, mean, na.rm=TRUE)
+basedat$wc48 = ld48$wc[match(basedat$hnrcid, ld24$hnrcid)]
+
+# Change in WC from baseline to wk24 and to wk48
+basedat$wc024 = basedat$wc24-basedat$wc0
+basedat$wc048 = basedat$wc48-basedat$wc0
+
+
+# GDS at baseline, wk24 and wk48
+basedat$gds0 = basedat$gds
+basedat$gds24 = ld24$gds[match(basedat$hnrcid, ld24$hnrcid)]
+basedat$gds48 = ld48$gds[match(basedat$hnrcid, ld48$hnrcid)]
+
+# Summary regression change score baseline-week 24
+basedat$srcs024 = ld24$summary_chng[match(basedat$hnrcid, ld24$hnrcid)]
+
+# BDI at baseline, wk24, and wk48
+basedat$bdi0 = basedat$BDI.II
+basedat$bdi24 = ld24$BDI.II[match(basedat$hnrcid, ld24$hnrcid)]
+basedat$bdi48 = ld48$BDI.II[match(basedat$hnrcid, ld48$hnrcid)]
+
+# Change in BDI from baseline to wk24 and to wk48
+basedat$bdi024 = basedat$bdi24-basedat$bdi0
+basedat$bdi048 = basedat$bdi48-basedat$bdi0
+
+
+# PAOFI score at baseline, wk24, and wk48
+basedat$paofi0 = basedat$PAOFI.Total
+basedat$paofi24 = ld24$PAOFI.Total[match(basedat$hnrcid, ld24$hnrcid)]
+basedat$paofi48 = ld48$PAOFI.Total[match(basedat$hnrcid, ld48$hnrcid)]
+
+# exclude scores >= 30 as unlikely, probably scored wrong
+# per discussion with Bob Heaton & group, July 2024
+basedat$paofi0[basedat$paofi0>=30] = NA     # 3 excluded
+basedat$paofi24[basedat$paofi24>=30] = NA   # 0 excluded
+basedat$paofi48[basedat$paofi48>=30] = NA  # 2 excluded
+
+# Change in PAOFI from baseline to wk24 and to wk48
+basedat$paofi024 = basedat$paofi24-basedat$paofi0
+basedat$paofi048 = basedat$paofi48-basedat$paofi0
+
+
+# IADL score at baseline, wk24, and wk48
+basedat$iadl0 = basedat$IADL.Complaints
+basedat$iadl24 = ld24$IADL.Complaints[match(basedat$hnrcid, ld24$hnrcid)]
+basedat$iadl48 = ld48$IADL.Complaints[match(basedat$hnrcid, ld48$hnrcid)]
+
+# Change in IADL from baseline to wk24 and to wk48
+basedat$iadl024 = basedat$iadl24-basedat$iadl0
+basedat$iadl048 = basedat$iadl48-basedat$iadl0
+
+
+# Adherence data at wk24 and wk48
+# Capsule count adherence
+basedat$rqrmber24 = ld24$rqrmber[match(basedat$hnrcid, ld24$hnrcid)]
+basedat$rqcompl24 = ld24$rqcompl[match(basedat$hnrcid, ld24$hnrcid)]
+basedat$rqrmber24[!is.na(basedat$rqcompl24)] = 1
+basedat$rqrmber48 = ld48$rqrmber[match(basedat$hnrcid, ld48$hnrcid)]
+basedat$rqcompl48 = ld48$rqcompl[match(basedat$hnrcid, ld48$hnrcid)]
+# rqrmber: remember to bring container of drug capsules at study visit
+# rqcompl: percentage of containers used among expected to be used
+
+# Text adherence
+textadh = read.csv("Data/Tesamorelin self-reported drug adherence.csv")
+colnames(textadh) = c("hnrcid", "textadh")  # text adherence data, percent
+textadh$arm = basedat$arm[match(textadh$hnrcid, basedat$hnrcid)]
+textadh$textadh24 = NA
+textadh$textadh24[textadh$arm=="Immediate"] = textadh$textadh[textadh$arm=="Immediate"]
+textadh$textadh48 = NA
+textadh$textadh48[textadh$arm=="Deferred"] = textadh$textadh[textadh$arm=="Deferred"]
+
+basedat$textadh24 = textadh$textadh24[match(basedat$hnrcid, textadh$hnrcid)]
+basedat$textadh48 = textadh$textadh48[match(basedat$hnrcid, textadh$hnrcid)]
+
+# basedat by treatment arm
+basedat1 = basedat[basedat$arm=="Immediate",]
+basedat2 = basedat[basedat$arm=="Deferred",]
+@
+
+\clearpage
+
+\section{Enrollment, Study Status, Study Treatment, and Adherence}
+
+\subsection{Enrollment}
+
+Table~\ref{Table:21} summarizes the enrollment by site and study arm.  
+
+A total of N=73 participants were randomized into the study, N=43 in the Immediate Treatment and N=30 in the Deferred Treatment arm, at the two study sites, UCSD: N=46 (including the Palm Springs subsite, N=17), and USC: N=27.  
+
+
+<<echo=FALSE, results=tex>>=
+######## Chunk 3: Enrollment by arm and site
+tab21 = table(basedat$site, basedat$arm)[c(2,3,1), 2:1]
+tab21 = rbind(tab21, margin.table(tab21, margin = 2))
+tab21 = cbind(tab21, margin.table(tab21, margin = 1))
+colnames(tab21) =  c("Immediate Treatment", "Deferred Treatment", "Both Arms")
+rownames(tab21) = c("UCSD", "USC", "Palm Springs", "All Sites")
+
+print(xtable(tab21, align = "|l|c|c|c|", 
+             caption="Study enrollment, by treatment arm and study site.",
+    label = "Table:21"), 
+    caption.placement="top",
+    size="normalsize",
+    include.rownames = TRUE, 
+    include.colnames = TRUE, 
+    sanitize.text.function = function(x) {x}
+    )
+@
+
+
+\subsection{Study status at week 24}
+
+Table~\ref{Table:22} reports the study status at the primary endpoint (week 24) of the randomized participants.  
+
+
+Table~\ref{Table:23} lists the participants who did not provide a week 24 endpoint, and the reasons for study non-completion.
+
+Week 24 endpoint was provided by all but three participants, two in the Deferred and one in the Immediate arm.
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 4: Study status and primary endpoint availability at week 24
+
+# Use new (for 2019) variable, ststatt
+# See "Study Status Definitions 2018-10-04" document from Nicole Mirrasoul
+
+# Inspect study status by visit by participant
+tab = table(longdat$hnrcid)
+table(table(longdat$hnrcid))
+# 50 participants completed all 8 visits; 12 completed 7 visits
+#  3  4  5  6  7  8 
+#  2  1  2  6 12 50 
+pids8vis = names(tab)[tab==8]
+pids7vis = names(tab)[tab==7]
+pids6vis = names(tab)[tab==6]
+pids5vis = names(tab)[tab==5]
+pids4vis = names(tab)[tab==4]
+pids3vis = names(tab)[tab==3]
+
+tmpcols = c("hnrcid","visit","visit_status","ststatt","arm","gds","summary_chng")
+longdat[longdat$hnrcid %in% pids3vis, tmpcols]
+# 29123 (Def) last visit wk0, status "completed"
+# E0019 (Def) last visit wk0, status "completed"
+
+longdat[longdat$hnrcid %in% pids4vis, tmpcols]
+# 28345 (Def) last visit wk24, at wk24 visit complete, status "withdrawn"
+
+longdat[longdat$hnrcid %in% pids5vis, tmpcols]
+# 29055 (Imm) last visit wk24, status "active"
+# E0004 (Def) last visit wk26, complete at wk24, incomplete at wk26, status "lost"
+
+
+longdat[longdat$hnrcid %in% pids6vis, tmpcols]
+# 28291 (Imm) withdrawn after wk24, no wk12
+# 28512 (Imm) withdrawn after wk24, no wk12
+# 28908 (Imm) withdrawn after wk24, no wk2
+# CA608 (Def) completed wk48,       no wk28
+# CC140 (Imm) withdrawn after wk24, no wk2
+# F0294 (Imm) withdrawn after wk24, no wk12
+
+longdat[longdat$hnrcid %in% pids7vis, tmpcols]
+# 11481 (Imm) off list after wk24
+# 19868 (Imm) withdrawn after wk24
+# 26357 (Imm) withdrawn after wk24
+# 28467 (Def) completed wk48, no wk36
+# 28496 (Def) completed wk48, no wk36
+# 28627 (Imm) completed wk48, no wk12
+# 28927 (Def) completed wk48, no wk26
+# E0018 (Imm) withdrawn after wk24
+# E0024 (Imm) withdrawn after wk24
+# E0039 (Def) withdrawn after wk36
+# E0041 (Imm) withdrawn after wk24
+# T0728 (Imm) withdrawn after wk24
+
+table(longdat$visit[longdat$hnrcid %in% pids8vis & longdat$arm=="Immediate"])
+table(longdat$visit[longdat$hnrcid %in% pids8vis & longdat$arm=="Deferred"])
+# Immediate arm: 29 participants have all 8 visits
+# Deferred arm: 21 participants have all 8 visits
+
+table(longdat$visit[longdat$arm=="Immediate"])
+table(longdat$visit[longdat$arm=="Deferred"])
+
+# To summarize:
+# Immediate arm (n=43): 
+# * 43 have wk24 visit (0 missing visit; E0024 no gds at wk24) 
+# * 30 have wk48 visit (13 missing visit)
+# Defferred arm (n=30): 
+# * 28 have wk24 visit (2 missing visit, 29123, E0019)
+# * 25 have wk48 visit (5 missing visit)
+@
+
+
+
+<<echo=FALSE, results=tex>>=
+######## Chunk 5: Print study status table
+
+pids.disc24 = basedat$hnrcid[is.na(basedat$gds24)]  # "29123","E0019","E0024"
+### Per document from Mirrasoul 4/23/19:
+# E0019 - Wk0 withdrawn Not able to make study visits 
+# E0024 - Wk24 withdrawn, reason not specified (withdrew consent after visiting family out of state)
+### Per discussion with Rafael Aquino, 5/22/2024: 
+# 29123: The participant withdrew after week 0
+
+tab22 = data.frame(Status = rep(NA, 3), Immediate=rep(NA, 3),
+                   Deferred=rep(NA, 3),N=rep(NA, 3), 
+                   Notes=rep(NA, 3))
+tab22$Status = c("Randomized", "Completed week 24 endpoint",
+                 "Did not complete week 24 endpoint")
+tab22$Immediate = c(length(basedat$hnrcid[basedat$arm=="Immediate"]),
+                    length(basedat$hnrcid[basedat$arm=="Immediate" & !is.na(basedat$gds24)]),
+                    length(basedat$hnrcid[basedat$arm=="Immediate" & is.na(basedat$gds24)]))
+tab22$Deferred = c(length(basedat$hnrcid[basedat$arm=="Deferred"]),
+                    length(basedat$hnrcid[basedat$arm=="Deferred" & !is.na(basedat$gds24)]),
+                    length(basedat$hnrcid[basedat$arm=="Deferred" & is.na(basedat$gds24)]))
+tab22$N =       c(length(basedat$hnrcid),
+                    length(basedat$hnrcid[!is.na(basedat$gds24)]),
+                    length(basedat$hnrcid[is.na(basedat$gds24)]))
+tab22$Notes[3] = c("See table below for details")
+
+
+colnames(tab22)[1] = "Study Status"
+print(xtable(tab22, align = "|l|l|l|l|l|l|", 
+             caption="Study status at primary endpoint, week 24.",
+    label = "Table:22"), 
+    caption.placement="top",
+    size="normalsize",
+    include.rownames = FALSE, 
+    include.colnames = TRUE, 
+    sanitize.text.function = function(x) {x}
+    )
+@
+
+
+<<echo=FALSE, results=tex>>=
+######## Chunk 6: Print reason for non-completion of week 24 endpoint table
+
+pids.disc24 = basedat$hnrcid[is.na(basedat$gds24)]  # "29123","E0019","E0024"
+### Per discussion with Rafael Aquino, 5/22/2024: 
+# 29123: The participant withdrew after week 0
+### Per document from Mirrasoul 4/23/19:
+# E0019 - Wk0 withdrawn Not able to make study visits 
+# E0024 - Wk24 withdrawn, reason not specified (withdrew consent after visiting family out of state)
+
+nos24 = length(pids.disc24) # 3 participants
+tab23 = data.frame(ID = rep(NA, nos24), Arm = rep(NA, nos24), Note = rep(NA, nos24))
+tab23$ID = as.character(pids.disc24)
+tab23$Arm = basedat$arm[match(tab23$ID, basedat$hnrcid)]
+tab23$Note = c(
+  "Participant withdrew from study after week 0",
+  "Participant withdrew after week 0: not able to make study visits",
+  "Participant withdrew after week 24, reason unspecified; did not provide week 24 endpoint"
+)
+
+print(xtable(tab23, align = "|l|l|l|l|", 
+             caption="Details regarding the three participants who did not provide a week 24 endpoint.",
+    label = "Table:23"), 
+    caption.placement="top",
+    size="normalsize",
+    include.rownames = FALSE, 
+    include.colnames = TRUE, 
+    sanitize.text.function = function(x) {x}
+    )
+@
+
+
+\subsection{Study treatment at week 24}
+
+All participants received treatment corresponding to their assigned treatment arm.
+
+All participants in the Deferred arm were considered on-treatment by week 24, by default.
+
+Of the $n=43$ participants in the Immediate arm with measured week 24 outcome are known to have stopped treatment due to adverse events or other reasons.
+Furthermore, $n=36 (83.7\%)$ participants in the Immediate arm completed the 24 weeks of treatment.  Of the 7 participants who did not complete 24 weeks of treatment,
+four completed at least 12 weeks of treatment, and 3 participants show no record of having taken their treatment.  These latter 3 include E0024 who did not have a week 24 endpoint, as well as two other participants with week 24 endpoint measured.
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 7: Study treatment status at week 24
+# Study treatment variables
+# mnrxcod, mnrxdos: medication code, daily dose
+# mnrxstr, mnrxstp: start/stop date
+# mnlastz mnlastt, mnlastd: last use date/use time/dose
+# Info available:
+# - Immediate arm: weeks 000, 002, etc., 024
+# - Deferred arm: weeks 024, etc., 048
+
+table(longdat$mnrxcod=="", longdat$visit, longdat$arm)
+# Variables are consistent, in the sense that they are all "" or NA at once
+pid.offrx24 = longdat$hnrcid[longdat$mnrxcod=="" & longdat$visit=="024" & longdat$arm=="Immediate"]
+longdat[longdat$hnrcid %in% pid.offrx24 & longdat$mnrxcod=="" & longdat$visit=="012" & longdat$arm=="Immediate",] 
+# 4 participants last treatment wk 12; 3 participants (29055, E2001, E2015) show no treatment record
+
+basedat$onrx24 = ifelse(basedat$hnrcid %in% pid.offrx24, 0, 1) # On treatment at week 24
+@
+
+
+
+\subsection{Treatment adherence at week 24}
+
+Two types of adherence data were collected: drug capsule count (on all participants), and text-based adherence (UCSD participants only).
+
+\subsubsection{Capsule count adherence} 
+
+Capsule count adherence was measured at each clinic visit in the form of a proportion (0-100\%), by comparing the number of capsules remaining in the participant's possession to the number of capsules that the participant should have, if they administered the treatment as scheduled.
+
+Among 36 participants in the Immediate on study treatment at week 24, 20 (55.5\%) remembered to bring their capsules to week 24 study visit.
+Among these 20, the mean adherence was 84.0\%, the median was 95.0\%, inter-quartile range [84.8\%, 100\%], and range [18\%, 100\%], and 17 participants (85\%) had $\geq 75\%$ adherence.
+
+\subsubsection{Text adherence}
+
+Of the 28 UCSD participants (including Palm Springs site), 24 (85.7\%) have text adherence data.  
+Of these, the mean text adherence was 82.7\%, the median was 92.9\%, inter-quartile range [75.5\%, 98.0\%], range [20\%, 100\%], and 19 (79.2\%) had $\geq 75\%$ adherence.
+
+
+For the $n=15$ participants with both capsule count and text adherence at week 24, the agreement was very good, 
+Spearman correlation = 0.803.
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 8: Treatment adherence at week 24
+
+## Capsule adherence: rqrmber24, rqcompl24
+table(is.na(basedat1$rqrmber24))  # 7 missing, 36 available
+table(basedat1$rqrmber24)         # 20 remembered to bring capsules, 16 did not
+summary(basedat1$rqcompl24)
+summary(basedat1$rqcompl24 >= 75) # n=17 of 20, 85%
+
+
+## Text adherence: textadh24 - UCSD participants only
+table(is.na(basedat1$textadh24))  # 24 present
+table(is.na(basedat1$textadh24), basedat1$site) # 24 of 28 present at UCSD/PS
+basedat1uc = basedat1[basedat1$site != "USC",]
+summary(basedat1uc$textadh24)
+summary(basedat1uc$textadh24 >= 75) # n=19 of 24, 79.2%
+
+# Agreement of the two measures
+with(basedat1uc, table(is.na(rqcompl24), is.na(textadh24))) # n=15 have both
+cor.test(basedat1uc$rqcompl24, basedat1uc$textadh24, method="spearman")
+@
+
+
+\pagebreak
+
+\section{Baseline Characteristics}
+
+Baseline characteristics overall and by treatment arm are presented in Tables~\ref{Table:31} and~\ref{Table:32}.
+
+The mean age of participants was 58.6 years (SD = 9.5 years).
+
+The majority of participants were male (65/73, 89\%).
+
+The majority were White (N=41, 56\%) and Hispanic (N=26, 36\%), with N=5 (7\%) Black, and
+1 (1\%) other.
+
+The mean education was 14.1 years (SD=3.0 years).
+
+All participants were on anti-retroviral regimens, with N=56 (84\%) having undetectable viral load at baseline.
+
+The mean global deficit score (GDS) at baseline was 0.9 points (SD=0.7).
+
+Of the 73 participants, N=56 (77\%) had $\textup{GDS}\geq 0.5$ at baseline.
+
+The characteristics were balanced between treatment arms.
+
+Note: we removed PAOFI values $\geq 30$, as not plausible, likely due to interviewer error. Thus we removed 3 baseline values and 2 week 48 values.
+
+<<echo=FALSE, results=tex>>=
+######## Chunk 9: Baseline characteristics, overall
+
+count=0
+demo = matrix(nrow=100, ncol=4)
+colnames(demo)=c("Variable", "N", "Mean(SD)/N(%)", "Median [IQR]")
+
+### 14 Site
+count=count+1
+demo[count,1] = "Site"
+demo[count,2] = sum(!is.na(basedat$site))
+
+count=count+1
+demo[count,1] = "    - UCSD"
+tab = table(basedat$site); proptab = prop.table(tab)
+demo[count,3] = paste(tab[2], " (", round(proptab[1]*100,1), "%)", sep="")
+
+count=count+1
+demo[count,1] = "    - USC"
+demo[count,3] = paste(tab[3], " (", round(proptab[2]*100,1), "%)", sep="")
+
+count=count+1
+demo[count,1] = "    - Palm Springs"
+demo[count,3] = paste(tab[1], " (", round(proptab[2]*100,1), "%)", sep="")
+
+
+
+### 1 Age
+count=count+1
+demo[count,1] = "Age (years)"
+demo[count,2] = sum(!is.na(basedat$age))
+demo[count,3] = paste(round(mean(basedat$age,na.rm=T),1)," (", round(sd(basedat$age,na.rm=T),1),")",sep="")
+demo[count,4] = paste(summary(basedat$age)[3], " [", summary(basedat$age)[2]," - ", summary(basedat$age)[5],"]",sep="" )
+
+
+### 2 Gender
+count=count+1
+demo[count,1] = "Gender"  # check that 1=Male
+demo[count,2] = sum(!is.na(basedat$gender))
+
+count=count+1
+demo[count,1] = " - Male"
+tab = table(basedat$gender); proptab = prop.table(tab)
+demo[count,3] = paste(tab[1], " (", round(proptab[1]*100,1), "%)", sep="")
+
+count=count+1
+demo[count,1] = " - Female"
+demo[count,3] = paste(tab[2], " (", round(proptab[2]*100,1), "%)", sep="")
+
+
+### 3 Race/ethnicity
+tab = table(basedat$ethnicity); proptab = prop.table(tab)
+
+count=count+1
+demo[count,1] = "Race/Ethnicity"  # check that 1=Male
+demo[count,2] = sum(!is.na(basedat$ethnicity))
+
+count=count+1
+demo[count,1] = " - White"
+demo[count,3] = paste(tab["wht"], " (", round(proptab[4]*100,1), "%)", sep="")
+
+count=count+1
+demo[count,1] = " - Hispanic"
+demo[count,3] = paste(tab["his"], " (", round(proptab[2]*100,1), "%)", sep="")
+
+count=count+1
+demo[count,1] = " - Black"
+demo[count,3] = paste(tab["blk"], " (", round(proptab[1]*100,1), "%)", sep="")
+
+count=count+1
+demo[count,1] = " - Other"
+demo[count,3] = paste(tab["oth"], " (", round(proptab[3]*100,1), "%)", sep="")
+
+
+
+### 4 Education
+count=count+1
+demo[count,1] = "Education (years)"
+demo[count,2] = sum(!is.na(basedat$education))
+demo[count,3] = paste(round(mean(basedat$education,na.rm=T),1)," (", 
+                      round(sd(basedat$education,na.rm=T),1),")",sep="")
+demo[count,4] = paste(summary(basedat$education)[3], " [", 
+                      summary(basedat$education)[2]," - ", summary(basedat$education)[5],"]",sep="" )
+
+
+### 6 Currently on ARV's (currently_on_arvs)
+tab = table(basedat$currently_on_arvs); proptab = prop.table(tab)
+count=count+1
+demo[count,1] = "On ARV"
+demo[count,2] = sum(!is.na(basedat$currently_on_arvs))
+demo[count,3] = paste(tab[names(tab)=="1"], " (", round(proptab[names(proptab)=="1"]*100,1), "%)", sep="")
+
+
+### 7 Nadir CD4
+count=count+1
+demo[count,1] = "Nadir CD4 (cells/mm3)"
+demo[count,2] = sum(!is.na(basedat$nadir_CD4))
+demo[count,3] = paste(round(mean(basedat$nadir_CD4,na.rm=T))," (", 
+                      round(sd(basedat$nadir_CD4,na.rm=T)),")",sep="")
+demo[count,4] = paste(summary(basedat$nadir_CD4)[3], " [", 
+                      round(summary(basedat$nadir_CD4)[2])," - ", 
+                      round(summary(basedat$nadir_CD4)[5]),"]",sep="" )
+
+
+### 8 Current CD4
+basedat$current_CD4[basedat$current_CD4==9999] = NA  # missing values
+
+count=count+1
+demo[count,1] = "Current CD4 (cells/mm3)"
+demo[count,2] = sum(!is.na(basedat$current_CD4))
+demo[count,3] = paste(round(mean(basedat$current_CD4,na.rm=T))," (", 
+                      round(sd(basedat$current_CD4,na.rm=T)),")",sep="")
+demo[count,4] = paste(summary(basedat$current_CD4)[3], " [", 
+                      summary(basedat$current_CD4)[2]," - ", 
+                      summary(basedat$current_CD4)[5],"]",sep="" )
+
+
+#  9 Undetectable viral load (rnvalue <=20 copies/uL)
+tab = table(basedat$rnvalue <= 20); proptab = prop.table(tab)
+
+count=count+1
+demo[count,1] = "Undetectable VL (<20 cp/uL)"
+demo[count,2] = sum(!is.na(basedat$rnvalue))
+demo[count,3] = paste(tab[2], " (", round(proptab[2]*100,1), "%)", sep="")
+
+
+# 10 GDS at baseline
+count=count+1
+demo[count,1] = "GDS at baseline"
+demo[count,2] = sum(!is.na(basedat$gds0))
+demo[count,3] = paste(round(mean(basedat$gds0,na.rm=T),3)," (", 
+                      round(sd(basedat$gds0,na.rm=T),3),")",sep="")
+demo[count,4] = paste(round(summary(basedat$gds0)[3],3), " [", 
+                      round(summary(basedat$gds0)[2],3)," - ", 
+                      round(summary(basedat$gds0)[5],3),"]",sep="" )
+  
+  
+#  11 GDS >= 0.5 at baseline
+tab = table(basedat$gds0 >= 0.5); proptab = prop.table(tab)
+
+count=count+1
+demo[count,1] = "GDS >= 0.5 at baseline"
+demo[count,2] = sum(!is.na(basedat$gds0))
+demo[count,3] = paste(tab[2], " (", round(proptab[2]*100,1), "%)", sep="")
+
+
+# 12 Waist circumference (average of 3 measurements: qcwatc1, qcwatc2, qcwatc3)
+count=count+1
+demo[count,1] = "Waist circumference (cm)"
+demo[count,2] = sum(!is.na(basedat$wc0))
+demo[count,3] = paste(round(mean(basedat$wc0,na.rm=T),1)," (", 
+                      round(sd(basedat$wc0,na.rm=T),1),")",sep="")
+demo[count,4] = paste(round(summary(basedat$wc0)[3],1), " [", 
+                      round(summary(basedat$wc0)[2],1)," - ", 
+                      round(summary(basedat$wc0)[5],1),"]",sep="" )
+
+# 13 BDI-II
+count=count+1
+demo[count,1] = "BDI-II"
+demo[count,2] = sum(!is.na(basedat$bdi0))
+demo[count,3] = paste(round(mean(basedat$bdi0,na.rm=T),1)," (", 
+                      round(sd(basedat$bdi0,na.rm=T),1),")",sep="")
+demo[count,4] = paste(round(summary(basedat$bdi0)[3],1), " [", 
+                      round(summary(basedat$bdi0)[2],1)," - ", 
+                      round(summary(basedat$bdi0)[5],1),"]",sep="" )
+
+# 14 PAOFI
+count=count+1
+demo[count,1] = "PAOFI"
+demo[count,2] = sum(!is.na(basedat$paofi0))
+demo[count,3] = paste(round(mean(basedat$paofi0,na.rm=T),1)," (", 
+                      round(sd(basedat$paofi0,na.rm=T),1),")",sep="")
+demo[count,4] = paste(round(summary(basedat$paofi0)[3],1), " [", 
+                      round(summary(basedat$paofi0)[2],1)," - ", 
+                      round(summary(basedat$paofi0)[5],1),"]",sep="" )
+
+# 13 IADLs
+count=count+1
+demo[count,1] = "IADLs"
+demo[count,2] = sum(!is.na(basedat$iadl0))
+demo[count,3] = paste(round(mean(basedat$iadl0,na.rm=T),1)," (", 
+                      round(sd(basedat$iadl0,na.rm=T),1),")",sep="")
+demo[count,4] = paste(round(summary(basedat$iadl0)[3],1), " [", 
+                      round(summary(basedat$iadl0)[2],1)," - ", 
+                      round(summary(basedat$iadl0)[5],1),"]",sep="" )
+
+demo = demo[1:count,]
+
+print(xtable(demo, align = "|l|l|c|c|c|", 
+    caption="Baseline demographic and disease characteristics", 
+    label = "Table:31"), 
+    include.rownames = FALSE, 
+    include.colnames = TRUE, 
+    size="normalsize",
+    caption.placement="top")
+@
+
+
+
+
+<<echo=FALSE, results=tex>>=
+######## Chunk 10: Baseline characteristics, by treatment arm
+
+count=0
+demo = matrix(nrow=100, ncol=7)
+colnames(demo)=c("Variable", "N", "Mean(SD)/N(%)", "Median [IQR]",
+                 "Mean(SD)/N(%)", "Median [IQR]", "P-value")
+
+
+### 0 Overall
+count=count+1
+demo[count,3] = "Immediate"
+demo[count,5] = "Deferred"
+
+count=count+1
+demo[count,1] = "Overall"
+demo[count,2] = nrow(basedat)
+demo[count,3] = nrow(basedat1)
+demo[count,5] = nrow(basedat2)
+
+
+### 1 Site
+count=count+1
+demo[count,1] = "Site"
+demo[count,2] = sum(!is.na(basedat$site))
+tab = table(basedat$site, basedat$arm)
+p.val = fisher.test(tab)$p.value
+demo[count,7] = round(p.val,3)
+
+count=count+1
+demo[count,1] = "    - UCSD"
+tab1 = table(basedat1$site); proptab1 = prop.table(tab1)
+tab2 = table(basedat2$site); proptab2 = prop.table(tab2)
+demo[count,3] = paste(tab1[2], " (", round(proptab1[1]*100,1), "%)", sep="")
+demo[count,5] = paste(tab2[2], " (", round(proptab2[1]*100,1), "%)", sep="")
+
+
+count=count+1
+demo[count,1] = "    - USC"
+demo[count,3] = paste(tab1[3], " (", round(proptab1[2]*100,1), "%)", sep="")
+demo[count,5] = paste(tab2[3], " (", round(proptab2[2]*100,1), "%)", sep="")
+
+count=count+1
+demo[count,1] = "    - Palm Springs"
+demo[count,3] = paste(tab1[1], " (", round(proptab1[2]*100,1), "%)", sep="")
+demo[count,5] = paste(tab2[1], " (", round(proptab2[2]*100,1), "%)", sep="")
+
+
+
+### 2 Age
+count=count+1
+demo[count,1] = "Age (years)"
+demo[count,2] = sum(!is.na(basedat$age))
+demo[count,3] = paste(round(mean(basedat1$age,na.rm=T),1)," (", round(sd(basedat1$age,na.rm=T),1),")",sep="")
+demo[count,4] = paste(summary(basedat1$age)[3], " [", summary(basedat1$age)[2]," - ", summary(basedat1$age)[5],"]",sep="" )
+demo[count,5] = paste(round(mean(basedat2$age,na.rm=T),1)," (", round(sd(basedat2$age,na.rm=T),1),")",sep="")
+demo[count,6] = paste(summary(basedat2$age)[3], " [", summary(basedat2$age)[2]," - ", summary(basedat2$age)[5],"]",sep="" )
+demo[count,7] = round(wilcox.test(age~arm, data=basedat)$p.value, 3)
+
+### 3 Gender
+count=count+1
+demo[count,1] = "Gender"  # check that 1=Male
+demo[count,2] = sum(!is.na(basedat$gender))
+
+tab1 = table(basedat1$gender); proptab1 = prop.table(tab1)
+tab2 = table(basedat2$gender); proptab2 = prop.table(tab2)
+tab = table(basedat$gender, basedat$arm)
+p.val = fisher.test(tab)$p.value
+demo[count,7] = round(p.val,3)
+
+count=count+1
+demo[count,1] = " - Male"
+demo[count,3] = paste(tab1[1], " (", round(proptab1[1]*100,1), "%)", sep="")
+demo[count,5] = paste(tab2[1], " (", round(proptab2[1]*100,1), "%)", sep="")
+
+count=count+1
+demo[count,1] = " - Female"
+demo[count,3] = paste(tab1[2], " (", round(proptab1[2]*100,1), "%)", sep="")
+demo[count,5] = paste(tab2[2], " (", round(proptab2[2]*100,1), "%)", sep="")
+
+
+### 4 Race/ethnicity
+count=count+1
+tab1 = table(basedat1$ethnicity); proptab1 = prop.table(tab1)
+tab2 = table(basedat2$ethnicity); proptab2 = prop.table(tab2)
+tab = table(basedat$ethnicity, basedat$arm)
+p.val = fisher.test(tab)$p.value
+demo[count,7] = round(p.val,3)
+
+demo[count,1] = "Race/Ethnicity"  # check that 1=Male
+demo[count,2] = sum(!is.na(basedat$ethnicity))
+
+count=count+1
+demo[count,1] = " - White"
+demo[count,3] = paste(tab1["wht"], " (", round(proptab1["wht"]*100,1), "%)", sep="")
+demo[count,5] = paste(tab2["wht"], " (", round(proptab2["wht"]*100,1), "%)", sep="")
+
+count=count+1
+demo[count,1] = " - Hispanic"
+demo[count,3] = paste(tab1["his"], " (", round(proptab1["his"]*100,1), "%)", sep="")
+demo[count,5] = paste(tab2["his"], " (", round(proptab2["his"]*100,1), "%)", sep="")
+
+count=count+1
+demo[count,1] = " - Black"
+demo[count,3] = paste(tab1["blk"], " (", round(proptab1["blk"]*100,1), "%)", sep="")
+demo[count,5] = paste(tab2["blk"], " (", round(proptab2["blk"]*100,1), "%)", sep="")
+
+count=count+1
+demo[count,1] = " - Other"
+demo[count,3] = paste(tab1["oth"], " (", round(proptab1["oth"]*100,1), "%)", sep="")
+demo[count,5] = paste(tab2["oth"], " (", round(proptab2["oth"]*100,1), "%)", sep="")
+
+
+
+### 5 Education
+count=count+1
+demo[count,1] = "Education (years)"
+demo[count,2] = sum(!is.na(basedat$education))
+demo[count,3] = paste(round(mean(basedat1$education,na.rm=T),1)," (", 
+                      round(sd(basedat1$education,na.rm=T),1),")",sep="")
+demo[count,4] = paste(summary(basedat1$education)[3], " [", 
+                      summary(basedat1$education)[2]," - ", summary(basedat1$education)[5],"]",sep="" )
+demo[count,5] = paste(round(mean(basedat2$education,na.rm=T),1)," (", 
+                      round(sd(basedat2$education,na.rm=T),1),")",sep="")
+demo[count,6] = paste(summary(basedat2$education)[3], " [", 
+                      summary(basedat2$education)[2]," - ", summary(basedat2$education)[5],"]",sep="" )
+demo[count,7] = round(wilcox.test(education~arm, data=basedat)$p.value, 3)
+
+
+### 6 Currently on ARV's (currently_on_arvs)
+count=count+1
+tab1 = table(basedat1$currently_on_arvs); proptab1 = prop.table(tab1)
+tab2 = table(basedat2$currently_on_arvs); proptab2 = prop.table(tab2)
+tab = table(basedat$currently_on_arvs, basedat$arm)
+p.val = ifelse(nrow(tab)==1, 1, fisher.test(tab)$p.value)
+demo[count,7] = round(p.val,3)
+
+demo[count,1] = "On ARV"
+demo[count,2] = sum(!is.na(basedat$currently_on_arvs))
+demo[count,3] = paste(tab1[names(tab1)=="1"], " (", round(proptab1[names(proptab1)=="1"]*100,1), "%)", sep="")
+demo[count,5] = paste(tab2[names(tab2)=="1"], " (", round(proptab2[names(proptab2)=="1"]*100,1), "%)", sep="")
+
+
+
+### 7 Nadir CD4
+count=count+1
+demo[count,1] = "Nadir CD4 (cells/mm3)"
+demo[count,2] = sum(!is.na(basedat$nadir_CD4))
+demo[count,3] = paste(round(mean(basedat1$nadir_CD4,na.rm=T))," (", 
+                      round(sd(basedat1$nadir_CD4,na.rm=T)),")",sep="")
+demo[count,4] = paste(summary(basedat1$nadir_CD4)[3], " [", 
+                      round(summary(basedat1$nadir_CD4)[2])," - ", 
+                      round(summary(basedat1$nadir_CD4)[5]),"]",sep="" )
+demo[count,5] = paste(round(mean(basedat2$nadir_CD4,na.rm=T))," (", 
+                      round(sd(basedat2$nadir_CD4,na.rm=T)),")",sep="")
+demo[count,6] = paste(summary(basedat2$nadir_CD4)[3], " [", 
+                      round(summary(basedat2$nadir_CD4)[2])," - ", 
+                      round(summary(basedat2$nadir_CD4)[5]),"]",sep="" )
+demo[count,7] = round(wilcox.test(nadir_CD4~arm, data=basedat)$p.value, 3)
+
+
+### 8 Current CD4
+basedat$current_CD4[basedat$current_CD4==9999] = NA  # missing values
+
+count=count+1
+demo[count,1] = "Current CD4 (cells/mm3)"
+demo[count,2] = sum(!is.na(basedat$current_CD4))
+demo[count,3] = paste(round(mean(basedat1$current_CD4,na.rm=T))," (", 
+                      round(sd(basedat1$current_CD4,na.rm=T)),")",sep="")
+demo[count,4] = paste(summary(basedat1$current_CD4)[3], " [", 
+                      summary(basedat1$current_CD4)[2]," - ", 
+                      summary(basedat1$current_CD4)[5],"]",sep="" )
+demo[count,5] = paste(round(mean(basedat2$current_CD4,na.rm=T))," (", 
+                      round(sd(basedat2$current_CD4,na.rm=T)),")",sep="")
+demo[count,6] = paste(summary(basedat2$current_CD4)[3], " [", 
+                      summary(basedat2$current_CD4)[2]," - ", 
+                      summary(basedat2$current_CD4)[5],"]",sep="" )
+demo[count,7] = round(wilcox.test(current_CD4~arm, data=basedat)$p.value, 3)
+
+
+#  9 Undetectable viral load (rnvalue <=20 copies/uL)
+count=count+1
+tab1 = table(basedat1$rnvalue <= 20); proptab1 = prop.table(tab1)
+tab2 = table(basedat2$rnvalue <= 20); proptab2 = prop.table(tab2)
+tab = table(basedat$rnvalue <= 20, basedat$arm)
+p.val = fisher.test(tab)$p.value
+demo[count,7] = round(p.val,3)
+
+demo[count,1] = "Undet. VL (<20 cp/uL)"
+demo[count,2] = sum(!is.na(basedat$rnvalue))
+demo[count,3] = paste(tab1[2], " (", round(proptab1[2]*100,1), "%)", sep="")
+demo[count,5] = paste(tab2[2], " (", round(proptab2[2]*100,1), "%)", sep="")
+
+
+# 10 GDS at baseline
+count=count+1
+demo[count,1] = "GDS at baseline"
+demo[count,2] = sum(!is.na(basedat$gds0))
+demo[count,3] = paste(round(mean(basedat1$gds0,na.rm=T),3)," (", 
+                      round(sd(basedat1$gds0,na.rm=T),3),")",sep="")
+demo[count,4] = paste(round(summary(basedat1$gds0)[3],3), " [", 
+                      round(summary(basedat1$gds0)[2],3)," - ", 
+                      round(summary(basedat1$gds0)[5],3),"]",sep="" )
+demo[count,5] = paste(round(mean(basedat2$gds0,na.rm=T),3)," (", 
+                      round(sd(basedat2$gds0,na.rm=T),3),")",sep="")
+demo[count,6] = paste(round(summary(basedat2$gds0)[3],3), " [", 
+                      round(summary(basedat2$gds0)[2],3)," - ", 
+                      round(summary(basedat2$gds0)[5],3),"]",sep="" )
+demo[count,7] = round(wilcox.test(gds~arm, data=basedat)$p.value, 3)
+  
+
+#  11 GDS >= 0.5 at baseline
+count=count+1
+tab1 = table(basedat1$gds0 >= 0.5); proptab1 = prop.table(tab1)
+tab2 = table(basedat2$gds0 >= 0.5); proptab2 = prop.table(tab2)
+tab = table(basedat$gds0 >= 0.5, basedat$arm)
+p.val = fisher.test(tab)$p.value
+demo[count,7] = round(p.val,3)
+
+demo[count,1] = "GDS >=0.5 at baseline"
+demo[count,2] = sum(!is.na(basedat$gds0))
+demo[count,3] = paste(tab1[2], " (", round(proptab1[2]*100,3), "%)", sep="")
+demo[count,5] = paste(tab2[2], " (", round(proptab2[2]*100,3), "%)", sep="")
+
+
+# 12 Waist circumference (average of 3 measurements: qcwatc1, qcwatc2, qcwatc3)
+
+count=count+1
+demo[count,1] = "Waist circumference (cm)"
+demo[count,2] = sum(!is.na(basedat$wc0))
+demo[count,3] = paste(round(mean(basedat1$wc0,na.rm=T),1)," (", 
+                      round(sd(basedat1$wc0,na.rm=T),1),")",sep="")
+demo[count,4] = paste(round(summary(basedat1$wc0)[3],1), " [", 
+                      round(summary(basedat1$wc0)[2],1)," - ", 
+                      round(summary(basedat1$wc0)[5],1),"]",sep="" )
+demo[count,5] = paste(round(mean(basedat2$wc0,na.rm=T),1)," (", 
+                      round(sd(basedat2$wc0,na.rm=T),1),")",sep="")
+demo[count,6] = paste(round(summary(basedat2$wc0)[3],1), " [", 
+                      round(summary(basedat2$wc0)[2],1)," - ", 
+                      round(summary(basedat2$wc0)[5],1),"]",sep="" )
+demo[count,7] = round(wilcox.test(wc0~arm, data=basedat)$p.value, 3)
+
+
+# 13 Beck Depression Inventory II
+count=count+1
+demo[count,1] = "BDI-II"
+demo[count,2] = sum(!is.na(basedat$bdi0))
+demo[count,3] = paste(round(mean(basedat1$bdi0,na.rm=T),1)," (", 
+                      round(sd(basedat1$bdi0,na.rm=T),1),")",sep="")
+demo[count,4] = paste(round(summary(basedat1$bdi0)[3],1), " [", 
+                      round(summary(basedat1$bdi0)[2],1)," - ", 
+                      round(summary(basedat1$bdi0)[5],1),"]",sep="" )
+demo[count,5] = paste(round(mean(basedat2$bdi0,na.rm=T),1)," (", 
+                      round(sd(basedat2$bdi0,na.rm=T),1),")",sep="")
+demo[count,6] = paste(round(summary(basedat2$bdi0)[3],1), " [", 
+                      round(summary(basedat2$bdi0)[2],1)," - ", 
+                      round(summary(basedat2$bdi0)[5],1),"]",sep="" )
+demo[count,7] = round(wilcox.test(bdi0~arm, data=basedat)$p.value, 3)
+
+
+# 14 PAOFI
+count=count+1
+demo[count,1] = "PAOFI"
+demo[count,2] = sum(!is.na(basedat$paofi0))
+demo[count,3] = paste(round(mean(basedat1$paofi0,na.rm=T),1)," (", 
+                      round(sd(basedat1$paofi0,na.rm=T),1),")",sep="")
+demo[count,4] = paste(round(summary(basedat1$paofi0)[3],1), " [", 
+                      round(summary(basedat1$paofi0)[2],1)," - ", 
+                      round(summary(basedat1$paofi0)[5],1),"]",sep="" )
+demo[count,5] = paste(round(mean(basedat2$paofi0,na.rm=T),1)," (", 
+                      round(sd(basedat2$paofi0,na.rm=T),1),")",sep="")
+demo[count,6] = paste(round(summary(basedat2$paofi0)[3],1), " [", 
+                      round(summary(basedat2$paofi0)[2],1)," - ", 
+                      round(summary(basedat2$paofi0)[5],1),"]",sep="" )
+demo[count,7] = round(wilcox.test(paofi0~arm, data=basedat)$p.value, 3)
+
+
+# 15 IADLs
+count=count+1
+demo[count,1] = "IADLs"
+demo[count,2] = sum(!is.na(basedat$iadl0))
+demo[count,3] = paste(round(mean(basedat1$iadl0,na.rm=T),1)," (", 
+                      round(sd(basedat1$iadl0,na.rm=T),1),")",sep="")
+demo[count,4] = paste(round(summary(basedat1$iadl0)[3],1), " [", 
+                      round(summary(basedat1$iadl0)[2],1)," - ", 
+                      round(summary(basedat1$iadl0)[5],1),"]",sep="" )
+demo[count,5] = paste(round(mean(basedat2$iadl0,na.rm=T),1)," (", 
+                      round(sd(basedat2$iadl0,na.rm=T),1),")",sep="")
+demo[count,6] = paste(round(summary(basedat2$iadl0)[3],1), " [", 
+                      round(summary(basedat2$iadl0)[2],1)," - ", 
+                      round(summary(basedat2$iadl0)[5],1),"]",sep="" )
+demo[count,7] = round(wilcox.test(iadl0~arm, data=basedat)$p.value, 3)
+
+
+demo = demo[1:count,]
+
+print(xtable(demo, align = "|l|l|c|c|c|c|c|c|", 
+    caption="Baseline demographic and disease characteristics by treatment arm. Comparison used Wilcoxon rank sum test for continuous variables and Fisher's exact test for binary and categorical variables.", 
+    label = "Table:32"), 
+    include.rownames = FALSE, 
+    include.colnames = TRUE, 
+    size="normalsize",
+    caption.placement="top")
+@
+
+
+\newpage
+\textcolor{white}{Some blank text here}
+
+\newpage
+
+\section{Analysis Of Summary Regression Change Score Endpoint at Week 24}
+
+
+The primary study endpoint was summary regression change score between baseline and week 24
+(SRCS024).  The primary analysis involved comparison of SRCS024 between the two treatment arms, in an intent-to-treat (ITT) setup.  Secondary analyses of SRCS024 included per-protocol analysis, completers-only, a subgroup analysis involving only participants with $\textup{GDS} \geq 0.5$ at baseline, a group comparison of SRCS024 adjusting for baseline GDS, and a comparison of SRCS024 improvers.
+
+
+\subsection{Primary analysis: intent-to-treat comparison between arms, conservative analysis}
+
+
+
+The primary study analysis compared SRCS024 between treatment arms.  
+Per study design, missing SRCS024 values were imputed from the lower (worse) 50\% values from their respective treatment arms (conservative analysis).
+
+SRCS024 were available for all but three participants - two in the Deferred and one in the Immediate treatment arm.
+
+The analysis used K=1000 imputed datasets.
+
+The difference in mean SRCS024 between the immediate and deferred arm (and 95\% CI)
+is $0.068$ $(-0.168, 0.304)$.  The difference between arms was not significant, $p=0.573$.
+
+Within the Immediate arm, the mean SRCS024 was 0.146, 95\% CI $(-0.002, 0.294)$. 
+The mean change was not significant, $p=0.060$.
+
+Within the Deferred arm, the mean SRCS was 0.078, 95\% CI $(-0.108, 0.263)$.
+The mean change was not significant, $p=0.418$.
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 11: Comparison of SRCS024, primary analysis
+library(mice)
+set.seed(seed=6042023)
+
+med.srcs024 = tapply(basedat$srcs024, basedat$arm, median, na.rm=TRUE)
+lowhalf_imm =  basedat1$srcs024[basedat1$srcs024 <= med.srcs024[2]]
+lowhalf_imm = lowhalf_imm[!is.na(lowhalf_imm)]
+lowhalf_def =  basedat2$srcs024[basedat2$srcs024 <= med.srcs024[1]]
+lowhalf_def = lowhalf_def[!is.na(lowhalf_def)]
+
+K=1000 # number of imputations
+datimp = matrix(NA, nrow=K, ncol=3)
+colnames(datimp) = pids.disc24 # Def Def Imm
+
+datimp[,1] = sample(lowhalf_def, K, replace=TRUE) # 29123 Def
+datimp[,2] = sample(lowhalf_def, K, replace=TRUE) # E0019 Def
+datimp[,3] = sample(lowhalf_imm, K, replace=TRUE) # E0024 Imm
+
+ok= rep(NA,K)
+coef.imp = data.frame(beta=ok, se.beta=ok,
+                      betaI=ok, se.betaI=ok,
+                      betaD=ok, se.betaD=ok)
+for (i in 1:K){
+  srcsimp = basedat$srcs024
+  srcsimp[is.na(basedat$srcs024)] = datimp[i,]
+  # comparison b/w arms
+  fit.imp = lm(srcsimp ~ basedat$arm)
+  sfit = summary(fit.imp)
+  coef.imp[i,1:2] = sfit$coefficients[2,1:2]
+  # change within immediate arm
+  fit.impI = lm(srcsimp ~ 1, subset=(basedat$arm=="Immediate"))
+  sfitI = summary(fit.impI)
+  coef.imp[i,3:4] = sfitI$coefficients[1,1:2]
+  # change within deferred arm
+  fit.impD = lm(srcsimp ~ 1, subset=(basedat$arm=="Deferred"))
+  sfitD = summary(fit.impD)
+  coef.imp[i,5:6] = sfitD$coefficients[1,1:2]
+}
+
+## Comparison b/w arms
+mi.test = pool.scalar(Q=coef.imp$beta, U=coef.imp$se.beta^2, n=nrow(basedat))
+t.stat = mi.test$qbar/sqrt(mi.test$t) # pooled MI t-statistic
+(p.value = 2 * pt(-abs(t.stat), df = mi.test$df)) # pooled MI p-value
+# Estimate of delta srcs024 and 95% CI
+(srcs024.ci = round(mi.test$qbar +c(0,-1.96,1.96)*sqrt(mi.test$t),3))
+
+## Change within Immediate arm
+mi.testI = pool.scalar(Q=coef.imp$betaI, U=coef.imp$se.betaI^2, n=nrow(basedat1))
+t.statI = mi.testI$qbar/sqrt(mi.testI$t) # pooled MI t-statistic
+(p.valueI = 2 * pt(-abs(t.statI), df = mi.testI$df)) # pooled MI p-value
+(srcs024I.ci = round(mi.testI$qbar +c(0,-1.96,1.96)*sqrt(mi.testI$t),3))
+
+## Change within Deferred arm
+mi.testD = pool.scalar(Q=coef.imp$betaD, U=coef.imp$se.betaD^2, n=nrow(basedat2))
+t.statD = mi.testD$qbar/sqrt(mi.testD$t) # pooled MI t-statistic
+(p.valueD = 2 * pt(-abs(t.statD), df = mi.testD$df)) # pooled MI p-value
+(srcs024D.ci = round(mi.testD$qbar +c(0,-1.96,1.96)*sqrt(mi.testD$t),3))
+@
+
+
+
+\subsection{Comparison between arms, per-protocol analysis}
+
+This analysis includes the 36 of 43 participants in the Immediate arm who stayed on treatment during the first 24 weeks, as well as all 30 participants in the Deferred arm, who received no intervention.
+Of these, 36 and 28 had sRCS at week 24.
+
+According to this analysis,
+the difference in mean SRCS024 between the immediate and deferred arm (and 95\% CI)
+is $0.064$ $(-0.189, 0.318)$.  The difference between arms was not significant, $p=0.614$.
+
+Within the Immediate arm, the mean SRCS024 was 0.168, 95\% CI $(-0.000, 0.336)$. 
+The mean change was not significant (strictly speaking), $p=0.0509$.
+
+Within the Deferred arm, the mean SRCS was 0.103, 95\% CI $(-0.095, 0.301)$.
+The mean change was not significant, $p=0.295$.
+
+(The result for the Deferred arm is the same as for the Completers Only analysis, since
+all participants in the Deferred arm are considered treatment-adherent by definition.)
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 12: Comparison of SRCS024, completers only
+
+
+tmpdat = basedat[basedat$onrx24==1,]
+table(tmpdat$arm)
+
+# comparison b/w arms
+fit = lm(srcs024 ~ arm, data=tmpdat)
+(sfit = summary(fit))
+(confint(fit))
+
+# change within Immediate arm
+fitI = lm(srcs024 ~ 1, data=tmpdat, subset=(arm=="Immediate"))
+(sfitI = summary(fitI))
+(confint(fitI))
+
+# change within Deferred arm
+fitD = lm(srcs024 ~ 1, data=tmpdat, subset=(arm=="Deferred"))
+(sfitD = summary(fitD))
+(confint(fitD)) 
+@
+
+
+\subsection{Intent-to-treat comparison between arms, completers only}
+
+{For this and all following analyses (unless explicitly stated otherwise), all participants with measured endpoint were included.
+No special treatment of missing data was undergone (``missing = missing analysis'').}
+
+Of $N=73$ participants, $N=70$ provided a SRCS024 endpoint, and are included here.
+ 
+
+The difference in mean SRCS024 between the immediate and deferred arm (and 95\% CI)
+is $0.052$ $(-0.192, 0.296)$.  The difference between arms was not significant, $p=0.673$.
+
+Within the Immediate arm, the mean SRCS024 was 0.155, 95\% CI $(0.001, 0.309)$. 
+The mean change was statistically significant, $p=0.0485$.
+
+Within the Deferred arm, the mean SRCS was 0.103, 95\% CI $(-0.095, 0.301)$.
+The mean change was not significant, $p=0.295$.
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 13: Comparison of SRCS024, completers only
+# comparison b/w arms
+fit = lm(srcs024 ~ arm, data=basedat)
+(sfit = summary(fit))
+(confint(fit))
+
+# change within Immediate arm
+fitI = lm(srcs024 ~ 1, data=basedat1)
+(sfitI = summary(fitI))
+(confint(fitI))
+
+# change within Deferred arm
+fitD = lm(srcs024 ~ 1, data=basedat2)
+(sfitD = summary(fitD))
+(confint(fitD)) 
+@
+
+
+\subsection{Subgroup analysis of participants with baseline $\textup{GDS}\geq 0.5$}
+
+Of the 73 randomized participants, $N=56$ had baseline $\GDS \geq 0.5$.
+Of these, $N=53$ provided SRCS024, $N=31$ in the Immediate and $N=22$ in the Deferred arms.  
+(The 3 participants without SRCS024 are the same excluded from the primary analysis, see Tables~\ref{Table:22}, \ref{Table:23}.)
+
+Within this subgroup, 
+the difference in mean SRCS024 between the immediate and deferred arm (and 95\% CI)
+is $0.073$ $(-0.208, 0.354)$.  The difference between arms was not significant, $p=0.605$.
+
+Within the Immediate arm, the mean SRCS024 was 0.247, 95\% CI $(0.052 0.442)$. 
+The mean change was statistically significant, $p=0.0146$.
+
+Within the Deferred arm, the mean SRCS was 0.174, 95\% CI $(-0.029, 0.377)$.
+The mean change was not significant, $p=0.089$.
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 14: Subgroup analysis of participants with baseline GDS>=0.5
+tmpdat = basedat[basedat$gds0 >= 0.5,]
+table(tmpdat$arm)
+table(is.na(tmpdat$srcs024), tmpdat$arm)
+
+# comparison b/w arms
+fit = lm(srcs024 ~ arm, data=tmpdat)
+(sfit = summary(fit))
+(confint(fit))
+
+# change within Immediate arm
+fitI = lm(srcs024 ~ 1, data=tmpdat, subset=(arm=="Immediate"))
+(sfitI = summary(fitI))
+(confint(fitI))
+
+# change within Deferred arm
+fitD = lm(srcs024 ~ 1, data=tmpdat, subset=(arm=="Deferred"))
+(sfitD = summary(fitD))
+(confint(fitD)) 
+@
+
+
+
+\subsection{Comparison of SRCS024 adjusting for baseline GDS}
+
+For this analysis all $N=70$ participants providing SRCS024 were included.
+The comparison between arms was done adjusting for square-root transformed baseline GDS, using a linear model.
+
+The adjusted difference in mean SRCS024 between the immediate and deferred arm (and 95\% CI)
+is $0.034$ $(-0.192, 0.259)$.  The difference between arms was not significant, $p=0.766$.
+
+Incidentally, square-root baseline GDS was positively associated with SRCS024, partial eta squared $=0.160$, $p<0.001$.
+
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 15: Comparison of SRCS024, completers only
+
+plot(srcs024 ~ gds0, data=basedat)
+plot(srcs024 ~ sqrt(gds0), data=basedat)
+
+fit = lm(srcs024 ~ arm + gds0, data=basedat)
+(sfit = summary(fit))
+(confint(fit))
+lsr::etaSquared(fit)
+
+sqrt.gds0 = sqrt(basedat$gds0)
+fit = lm(srcs024 ~ arm + sqrt.gds0, data=basedat)
+(sfit = summary(fit))
+(confint(fit))
+lsr::etaSquared(fit)
+
+@
+
+
+\subsection{Summary regression change score improvers at week 24}
+
+Among the participants with SRCS024, improvers included
+6 of 42 (14.3\%) in the Immediate and 3 of 28 (10.7\%) in the Deferred arm.
+
+Improved SRCS024 is defined as SRCS024 above the top 10\% SRCS024 observed in the Deferred arm.
+
+The proportion of improvers in the Deferred arm is about 10\% by definition - more exactly, 3 of 28 (10.7\%).
+
+
+The proportion of improvers in the Immediate arm is 6 of 42 (14.3\%), 95\% CI (5.4\%, 28.5\%).  It did not differ signficantly from 10\%, p=0.308 (Binomial test).
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 16: Comparison of SRCS024 improvers
+
+# SRCS024 improvement threshold
+srcs024top10 = quantile(basedat2$srcs024, probs=0.9, na.rm=TRUE)
+
+basedat$srcs024impr = (basedat$srcs024 > srcs024top10) + 0
+(tab = table(basedat$arm, basedat$srcs024impr))
+(prtab = prop.table(tab, margin=1))
+
+#fisher.test(tab)
+binom.test(x=tab[2,2], n=tab[2,1]+tab[2,2], p=0.10)
+@
+
+
+\subsection{Comparison of SRCS024 among adherent participants}
+
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 17: SRCS024 and treatment adherence
+
+## Adherence and SRCS024
+tmpdat1 = basedat1[!is.na(basedat1$rqcompl24),]
+table(is.na(tmpdat1$srcs024))
+cor.test(tmpdat1$rqcompl24, tmpdat1$srcs024, method="spearman")
+
+## Select participants with capsule count adherence >= 95
+tmpdat = basedat[(!is.na(basedat$rqcompl24) & basedat$rqcompl24 >=95) | basedat$arm=="Deferred",]
+table(tmpdat$arm)
+table(is.na(tmpdat$srcs024), tmpdat$arm)
+
+# comparison b/w arms
+fit = lm(srcs024 ~ arm, data=tmpdat)
+(sfit = summary(fit))
+(confint(fit))
+
+# change within Immediate arm
+fitI = lm(srcs024 ~ 1, data=tmpdat, subset=(arm=="Immediate"))
+(sfitI = summary(fitI))
+(confint(fitI))
+
+# change within Deferred arm
+fitD = lm(srcs024 ~ 1, data=tmpdat, subset=(arm=="Deferred"))
+(sfitD = summary(fitD))
+(confint(fitD)) 
+
+# Immediate arm: association of SRCS024 and adherence
+fit = lm(srcs024 ~ )
+## Text adherence: textadh24 - UCSD participants only
+table(is.na(basedat1$textadh24))  # 24 present
+table(is.na(basedat1$textadh24), basedat1$site) # 24 of 28 present at UCSD/PS
+basedat1uc = basedat1[basedat1$site != "USC",]
+summary(basedat1uc$textadh24)
+summary(basedat1uc$textadh24 >= 75) # n=19 of 24, 79.2%
+
+# Agreement of the two measures
+with(basedat1uc, table(is.na(rqcompl24), is.na(textadh24))) # n=15 have both
+@
+
+\newpage
+
+\section{Secondary Outcomes: Waist Circumference, Mood And Quality Of Life}
+
+
+\subsection{Waist circumference}
+
+
+Tesamorelin's clinical effect is to increase the levels of insulin-like growth factor (IGF-1) and to reduce the body fat mass, especially abdominal fat.  This effect should presumably translate into a reduced waist circumference.  Therefore, changes in waist circumference are a mediator of the treatment effect on neurocognition.
+
+\subsubsection{Changes in waist circumference from baseline to week 24}
+
+
+Waist circumference was collected at baseline for all $N=73$ participants, and at week 24 for $N=67$ $(91.2\%)$ participants (Immediate: $N=39$, Deferred: $N=28$).
+
+We analyzed the change in waist circumference at week 24 vs baseline.
+
+Within the Immediate arm, the median difference in WC between week 24 and baseline was -3.2 cm, 95\% CI $(-4.5, -1.5)$ cm.  The WC reduction was statistically significant, $p=0.0008$.
+
+Within the Deferred arm, the median difference in WC between week 24 and baseline was -0.5 cm, 95\% CI $(-2.5, 2.0)$ cm.  The WC change was not statistically significant, $p=0.56$.
+
+The change in WC from baseline  to week 24 was significantly more pronounced in the Immediate than in the Deferred arm, difference in medians  -2.7 cm, 95\% CI $(-4.7, -0.7)$ cm, $p=0.015$.
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 18: Waist circumference change to week 24
+
+# data availability
+with(basedat, table(is.na(wc0), arm))
+with(basedat, table(is.na(wc24), arm))
+with(basedat, table(is.na(wc024), arm))
+
+# change within Immediate arm
+with(basedat1, wilcox.test(wc24-wc0, conf.int=TRUE))
+
+# change within Deferred arm
+with(basedat2, wilcox.test(wc24-wc0, conf.int=TRUE))
+
+# comparison b/w arms
+with(basedat, wilcox.test(wc24-wc0 ~ arm, conf.int=TRUE))
+@
+
+
+\subsubsection{Changes in waist circumference and summary regression change score}
+
+The SRCS024 outcome did not correlate with the change in WC from baseline to week 24, Pearson $r=0.06$, $p=0.61$, Spearman $r=-0.01$, $p=0.60$.
+
+This result held within each group separately: within the Immediate arm, the Pearson correlation was $r=-0.05$, $p=0.76$, and Spearman correlation was $r=-0.05$, $p=0.75$.
+
+Wihtin the Deferred arm, the Pearson correlation was $r=0.24$, $p=0.21$, and Spearman correlation was $r=0.12$, $p=0.55$.
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 19: relationship of SRCS024 and WC024
+
+# relationship overall
+with(basedat, cor.test(srcs024, wc024, method="pearson")) # rho=0.06, p=0.61
+with(basedat, cor.test(srcs024, wc024, method="spearman")) # rho=-0.01, p=0.90
+
+# relationship within Immediate arm
+with(basedat1, cor.test(srcs024, wc024, method="pearson")) # rho=-0.05, p=0.76
+with(basedat1, cor.test(srcs024, wc024, method="spearman")) # rho=-0.05, p=0.75
+
+# relationship within Deferred arm
+with(basedat2, cor.test(srcs024, wc024, method="pearson")) # rho=0.24, p=0.21
+with(basedat2, cor.test(srcs024, wc024, method="spearman")) # rho=0.12, p=0.55
+
+plot(srcs024 ~ wc024, data=basedat,
+     xlab="Change in waist circumference from baseline to wk24",
+     ylab = "SRCS024",
+     col = ifelse(arm=="Immediate", "red", "blue"),
+     pch=16)
+@
+
+
+
+\subsection{Mood}
+
+Current mood symptoms were measured by Beck depression inventory-II (BDI-II).
+
+BDI-II was collected at baseline for $N=54$ $(74.0\%)$ participants ($N=32$ in Immediate and $N=22$ in Deferred arms).  Of these, the change in BDI-II to week 24 was available for $N=48$ $(65.7\%)$ participants (Immediate: $N=30$, Deferred: $N=18$).
+
+Changes in BDI-II from baseline to week 24 were summarized within each arm by median (and 95\% CI), and compared between arms using Wilcoxon's rank sum test.
+
+A negative change corresponds to an improvement in mood symptoms.
+
+Within the Immediate arm, the median difference in BDI-II between week 24 and baseline was -2.5 points, 95\% CI $(-6.0, 1.0)$ points.  The change was not statistically significant, $p=0.18$.
+
+Within the Deferred arm, the median difference in BDI-II between week 24 and baseline was -5.5 points, 95\% CI $(-10.5, -0.0)$ points.  The mood improvement was statistically significant, $p=0.044$.
+
+When comparing the change in BDI-II from baseline  to week 24 between the Immediate and Deferred arms, the difference in medians was 2.0 points, 95\% CI $(-3.0, 7.0)$ points.  There was no significant difference in mood improvement between arms, $p=0.46$.
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 20: BDI-II change to week 24
+
+# data availability
+with(basedat, table(is.na(bdi0), arm))
+with(basedat, table(is.na(bdi24), arm))
+with(basedat, table(is.na(bdi024), arm))
+
+# change within Immediate arm
+with(basedat1, wilcox.test(bdi24-bdi0, conf.int=TRUE))
+
+# change within Deferred arm
+with(basedat2, wilcox.test(bdi24-bdi0, conf.int=TRUE))
+
+# comparison b/w arms
+with(basedat, wilcox.test(bdi24-bdi0 ~ arm, conf.int=TRUE))
+@
+
+
+\subsection{Patient assessment of own functioning}
+
+PAOFI total score was used as a measure of patient's self-assessment of functioning.
+
+PAOFI was collected at baseline for $N=63$ $(86.3\%)$ participants, $N=38$ in Immediate and $N=25$ in Deferred arms.  (We removed PAOFI scores $\geq 30$ as implausible, likely due to interviewer error; thus, 3 baseline observations were removed, two from Immediate and one from Deferred arms.)
+
+The change in PAOFI to week 24 was available for $N=55$ $(75.3\%)$ participants (Immediate: $N=34$, Deferred: $N=21$).
+
+Changes in PAOFI total score from baseline to week 24 were summarized within each arm by median (and 95\% CI), and compared between arms using Wilcoxon's rank sum test.
+
+A negative change corresponds to an improvement in functioning.
+
+Within the Immediate arm, the median difference in PAOFI between week 24 and baseline was -1.0 points, 95\% CI $(-3.5, 1.0)$ points.  The improvement in self-assessed functioning was not statistically significant, $p=0.23$.
+
+Within the Deferred arm, the median difference in PAOFI between week 24 and baseline was -1.5 points, 95\% CI $(-3.5, 0.5)$ points.  The functioning improvement was not statistically significant, $p=0.111$.
+
+When comparing the change in PAOFI from baseline  to week 24 between the Immediate and Deferred arms, the difference in medians was 0.0 points, 95\% CI $(-3.0, 2.0)$ points.  There was no significant difference in functioning improvement between arms, $p=0.76$.
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 21: PAOFI change to week 24
+
+# data availability
+with(basedat, table(is.na(paofi0), arm))
+with(basedat, table(is.na(paofi24), arm))
+with(basedat, table(is.na(paofi024), arm))
+with(basedat, table(is.na(paofi024-paofi0), arm))
+
+# change within Immediate arm
+with(basedat1, wilcox.test(paofi24-paofi0, conf.int=TRUE))
+
+# change within Deferred arm
+with(basedat2, wilcox.test(paofi24-paofi0, conf.int=TRUE))
+
+# comparison b/w arms
+with(basedat, wilcox.test(paofi24-paofi0 ~ arm, conf.int=TRUE))
+@
+
+
+
+\subsection{Instrumental activities of daily living}
+
+IADL total score was used as another measure of patient's daily functioning.
+
+IADL was collected at baseline for $N=63$ $(86.3\%)$ participants, $N=38$ in Immediate and $N=25$ in Deferred arms).  
+Of these, the change in IADL to week 24 was available for $N=57$ $(78.1\%)$ participants (Immediate: $N=35$, Deferred: $N=22$).
+
+Changes in IADL total score from baseline to week 24 were summarized within each arm by median (and 95\% CI), and compared between arms using Wilcoxon's rank sum test.
+
+A negative change corresponds to an improvement in daily functioning.
+
+Within the Immediate arm, the median difference in IADL between week 24 and baseline was 0.0 points, 95\% CI $(-1.5, 1.5)$ points.  The improvement in daily functioning was not statistically significant, $p=0.94$.
+
+Within the Deferred arm, the median difference in IADL between week 24 and baseline was 0.5 points, 95\% CI $(-1.5, 2.0)$ points.  The functioning improvement was not statistically significant, $p=0.72$.
+
+When comparing the change in IADL from baseline  to week 24 between the Immediate and Deferred arms, the difference in medians was 0.0 points, 95\% CI $(-0.0, 1.0)$ points.  There was no significant difference in functioning improvement between arms, $p=0.72$.
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 22: IADL change to week 24
+
+# data availability
+with(basedat, table(is.na(iadl0), arm))
+with(basedat, table(is.na(iadl24), arm))
+with(basedat, table(is.na(iadl024), arm))
+
+# change within Immediate arm
+with(basedat1, wilcox.test(iadl24-iadl0, conf.int=TRUE))
+
+# change within Deferred arm
+with(basedat2, wilcox.test(iadl24-iadl0, conf.int=TRUE))
+
+# comparison b/w arms
+with(basedat, wilcox.test(iadl24-iadl0 ~ arm, conf.int=TRUE))
+
+@
+
+\newpage
+
+
+\section{Safety Up To Week 24}
+
+This section presents and summarizes the safety data for the Tesamorelin study. 
+
+\textcolor{red}{Only data up to week 24 visit are included.} 
+
+We report here only grade 3-4 adverse events, regardless of whether they are new or treatment-emergent.  (The presence of these events at baseline is noted, when appropriate.) We also include a detailed list of all treatment-emergent adverse events. 
+
+
+Note that all adverse events, regardless of treatment arm, are reported during the administration of Tesamorelin.  No information on adverse events is reported during the period of no Tesamorelin treatment.  Therefore, for the week 24 report all safety events occur in the Immediate arm.
+
+
+<<echo=FALSE, results=hide>>=
+######## Chunk 23: Create adverse events dataset
+
+### Adverse events dataset
+aedat = tes[!is.na(tes$avbasln), ]
+# aedat$arm = droplevels(aedat$arm)
+
+# Fix typos for event codes:
+aedat$avevlbc[aedat$avevlbc=="CRCI"] = "CRCL"
+aedat$avevlbc[aedat$avevlbc == "F135"] = "FBS"
+aedat$avevlbc[aedat$avevlbc == "ACT"] = "ALT"
+aedat$avevlbc[aedat$avevlbc=="GLVC"] = "GLUC"
+aedat$avevlbc[aedat$avevlbc=="T12"] = "712"
+aedat$avevlbc[aedat$avevlbc=="888"] = NA  # hnrcid E0035 wk36
+aedat$avscode[aedat$avscode=="377"] = "37" # hnrcid 28467 wk28
+aedat$avscode[aedat$avscode=="16"] = "76" # hnrcid 29119 wk24 face swelling
+
+# Remove rows with NA event code:
+aedat = aedat[!is.na(aedat$avevlbc),]
+
+aedat$aetype = appCodes$type[match(aedat$avevlbc, appCodes$code)]  # translate AE codes
+aedat$aetype = as.character(aedat$aetype)
+
+aedat$aetype[is.na(aedat$aetype)] = "TBD"  # To resolve: F135, ACT, <NA>
+# columns 1:6, 73:90, 102:104 of most interest for aedat
+
+
+## Identify unknown codes:
+aedat$aesite = app28$site[match(aedat$avscode, app28$code)]
+levels(aedat$aesite) = c(levels(aedat$aesite), "TBD")
+aedat$aesite[is.na(aedat$aesite) & !is.na(aedat$avscode)] = "TBD"
+aedat$aesite[is.na(aedat$aesite) | aedat$aesite == "N/A"] = NA
+# aedat$aesite = droplevels(aedat$aesite)
+
+## ONLY KEEP AE UP TO WK24
+aedat = aedat[aedat$visit %in% c("002","004","012","024"),]
+@
+
+
+<<label=tab50,echo=FALSE, results=tex, >>=
+######## Chunk 24: Clean and Process Adverse Events 
+
+
+##### 1. Inspect AE table and identify problematic lines/rows
+# columns 1:6, 73+ of most interest for aedat
+# dim(aedat)                    # rows ("events"): 8/11/24 n=1304; 9/14/22 n=1261;  5/29/21 n=1259
+# length(unique(aedat$hnrcid))  # participants affected 8/11/24 n=59; 9/14/22 n=53; 5/29/21 n=52
+pvis = paste(aedat$hnrcid, aedat$visit)
+# length(unique(pvis))          # participant-visits: 8/11/24 n=179; 9/14/22 n=163; 5/29/21 n=162
+pviscode = aedat$pviscode = paste(aedat$hnrcid, aedat$visit, aedat$avevlbc, aedat$avscode)
+pviscode.list = unique(pviscode)
+# length(pviscode.list)         # participant-visit-AE codes:  8/11/24 n=657; 9/14/22 n=620; 5/29/21 n=618
+
+
+#### Identify visits with unrecognized code
+# aedat[aedat$aetype == "TBD", c(1:6, 73:92)]  # all recognized 5/29/21
+
+### Identify visits with duplicated AE codes
+## These correspond to events where changes occurred in the interval b/w visits
+## E.g.: event was resolved & reoccurred, or grade changed
+## Only be concerned with grade 3 events in terms of resolution
+## Otherwise report each type of event only once between visits, with max grade
+## Some cases appear as duplicates (e.g., id=11451, wk 28) - differ in blood pressure, etc.
+
+pviscode.repeats = unique(pviscode[-match(pviscode.list, pviscode)])
+aedat.dupl = aedat[pviscode %in% pviscode.repeats,]  #
+pid.dupl = unique(aedat.dupl$hnrcid)
+# length(pid.dupl)                  # participants 9/14/22 n=26; 5/29/21 n=26
+# length(pviscode.repeats)          # unique patient-visit-codes 9/14/22 n=188; 5/29/21 n=188
+
+# aedat.dupl[aedat.dupl$pviscode == pviscode.repeats[1],c(1:6, 73:92, 102:104)]
+# aedat.dupl[aedat.dupl$pviscode == pviscode.repeats[2],c(1:6, 73:92, 102:104)]
+# aedat.dupl[aedat.dupl$pviscode == pviscode.repeats[3],c(1:6, 73:92, 102:104)]
+# ...
+# aedat.dupl[aedat.dupl$pviscode == pviscode.repeats[17],c(1:6, 69:80, 89:90, 98)]
+
+### Remove duplicates from aedat.  Keep the ones with max grade and/or unresolved.
+aedat = aedat[order(aedat$pviscode, -aedat$avgrade, aedat$avofstz, decreasing=TRUE), ]
+aedat2 = aedat[nrow(aedat):1,]  # in aedat2, the rows to be selected for problematic visits appear first
+aedat = aedat2[match(pviscode.list, aedat2$pviscode), ]  # n=620 from 1261 9/14/22
+
+### Related to study treatment?
+aedat$related = NA
+aedat$related[aedat$avrelat==0] = "No"
+aedat$related[aedat$avrelat==1] = "Yes"
+aedat$related[aedat$avrelat==2] = "Possibly"
+aedat$related[aedat$avrelat==3] = "Unknown"
+# none with NA avrelat
+# aedat[is.na(aedat$avrelat),]
+
+### Combine direct & total bilirubin; combine creatinine & creatinine clearance, for same patient/visit
+aedat$aetype2 = appCodes$type2[match(aedat$avevlbc, appCodes$code)]   # translate AE codes
+
+# aedat[is.na(match(aedat$avevlbc, appCodes$code)), c(1:7, 73:84)]    # none 5/29/21
+aedat = aedat[!is.na(match(aedat$avevlbc, appCodes$code)),]
+
+# Some participants have incorrect site codes (site TBD):
+# aedat[aedat$aesite=="TBD" & !is.na(aedat$aesite), c(1:7, 73:84)]    # none 5/29/21
+# unique(aedat$avscode[aedat$aesite=="TBD" & !is.na(aedat$aesite)])   # none 5/29/21
+
+
+### Identify duplicated AE's based on bilirubin and creatinine
+aedat$pvistype2 = paste(aedat$hnrcid, aedat$visit, aedat$aetype2, aedat$aesite)
+pvistype2.list = unique(aedat$pvistype2); 
+# length(pvistype2.list)   # 600 participant-visit-AE type2 5/29/21 - 18 duplicates
+
+### Identify visits with duplicated AE type2
+pvistype2.repeats = unique(aedat$pvistype2[-match(pvistype2.list, aedat$pvistype2)])
+aedat.dupl2 = aedat[aedat$pvistype2 %in% pvistype2.repeats,]
+pid.dupl2 = unique(aedat.dupl2$hnrcid)
+
+### Remove duplicates from aedat.  Keep the ones with max grade
+aedat = aedat[order(aedat$pviscode, -aedat$avgrade, decreasing=TRUE), ]
+aedat2 = aedat[nrow(aedat):1,]  # in aedat2, the rows to be selected for problematic visits appear first
+aedat = aedat2[match(pvistype2.list, aedat2$pvistype2), ]
+
+### Remove grade 1-2 AE's that were present at baseline
+aedat = aedat[aedat$avgrade >= 3 | aedat$avbasln == 0, ]  # down to 398 events 5/29/21, 9/14/22
+
+### Remove grade 0
+aedat = aedat[aedat$avgrade > 0,] # still 398 events
+
+### Combine type & site
+#aedat$aetypesite = NA
+#aedat$aetypesite[is.na(aedat$aesite)] = aedat$aetype[is.na(aedat$aesite)]
+#aedat$aetypesite[!is.na(aedat$aesite)] = paste(aedat$aetype[!is.na(aedat$aesite)], aedat$aesite[!is.na(aedat$aesite)], sep=", ")
+aedat$aesitetype = NA
+aedat$aesitetype[is.na(aedat$aesite)] = aedat$aetype[is.na(aedat$aesite)]
+aedat$aesitetype[!is.na(aedat$aesite)] = paste(aedat$aesite[!is.na(aedat$aesite)], aedat$aetype[!is.na(aedat$aesite)], sep=" ")
+
+### Handle aesitetype exceptions/spelling:
+aedat$aesitetype[aedat$aesitetype=="Breast Breast cancer"] = "Breast cancer"
+aedat$aesitetype[aedat$aesitetype=="Bone, lower body  Pain"] = "Fractured hip"
+aedat$aesitetype[aedat$aesitetype=="Urine  Bruising"] = "Injection site  Bruising"
+aedat$aesitetype[aedat$aesitetype=="Multiple sites  Pain"] = "Extremities  Pain"
+aedat$aesitetype[aedat$aesitetype=="Multiple sites  Other"] = " High Blood Pressure"
+aedat$aesitetype[aedat$aesitetype=="Multiple sites  Other"] = " High Blood Pressure"
+aedat$aesitetype[aedat$aesitetype=="Heart  High Blood Pressure"] = " High Blood Pressure"
+aedat$aesitetype[aedat$aesitetype=="Bone marrow  Other"] = " High Blood Pressure"
+aedat$aesitetype[aedat$aesitetype=="Foot  Other"] = "Foot  Pain"
+aedat$aesitetype[aedat$aesitetype=="Other  Other"] = "Hand/Finger  Pain"
+aedat$aesitetype[aedat$aesitetype=="Other test"] = "Low CD4 count"
+aedat$aesitetype[aedat$aesitetype=="Fasting blood sugar"] = "Fasting glucose"
+
+
+### Define AE categories
+aesitetype = unique(aedat$aesitetype)
+aecategory = rep(NA, times=length(aesitetype))
+aecategory[aesitetype %in% c("Injection site  Bruising", 
+      "Injection site  Burning",       
+      "Injection site  Erythema", 
+      "Injection site  Itchiness",
+      "Injection site  Skin Abnormality", 
+      "Abdomen/Groin/Pelvis  Itchiness", 
+      "Abdomen/Groin/Pelvis  Rash, non-allergic",
+      "Abdomen/Groin/Pelvis  Erythema",
+      "Abdomen/Groin/Pelvis  Lump",
+      "Abdomen/Groin/Pelvis  Urticaria",
+      "Abdomen/Groin/Pelvis  Pain", 
+      "Abdomen/Groin/Pelvis  Bruising")] = 
+  "Injection site burning/pain/rash"
+aecategory[aesitetype %in% c(" Constipation", 
+      " Distension", 
+      "Abdomen/Groin/Pelvis  Distension",
+      " Appetite Loss", "Stomach  GI Dysfunction", 
+      "Large intestine/Colon  Pain", "Large intestine/Colon  GI Dysfunction",
+      "Large intestine/Colon  Nausea", "Large intestine/Colon  Diarrhea",
+      "Intestine, small  Pain")] = 
+  "Gastro-intestinal discomfort"
+aecategory[aesitetype %in% c("Hand/Finger  Tingling", "Leg/Thigh/Calf  Pain",
+      "Muscle, lower body  Pain", "Joint  Stiffness", 
+      "Joint, lower body  Pain", "Joint, upper body  Pain",
+      "Joint, upper body  Stiffness", "Joint, lower body  Stiffness",
+      "Leg/Thigh/Calf  Pain", "Muscle, lower body  Pain", 
+      "Extremities  Numbness", "Hand/Finger  Tenderness", 
+      "Hand/Finger  Skin Abnormality", "Hand/Finger  Pain",
+      "Muscle, upper body  Pain", 
+      "Musculoskeletal  Pain", "Extremities  Discomfort", 
+      "Musculoskeletal TBD", "Face  Pain", 
+      "Muscle, upper body  Weakness", 
+      "Muscle, lower body  Weakness",
+      "Extremities  Pain",
+      "Foot  Pain", 
+      "Foot  Stiffness",
+      "Neck/Throat  Pain", "Leg/Thigh/Calf  Ache", 
+      "Bone  Pain", "Hand/Finger  Stiffness",
+      "Hand/Finger  Paresthesia", 
+      "Hand/Finger  Contraction",
+      "Muscle  Pain",
+      "Multiple sites  Pain",
+      "Muscle, upper body  Ache",
+      "Joint  Pain",
+      "Other  Other")] = 
+  "Musculo-skeletal pain"
+aecategory[aesitetype %in% c(
+    "Fasting glucose", 
+    "Non-fasting glucose", 
+    "Fasting triglycerides")] = 
+  "Abnormal glucose or triglycerides"
+aecategory[aesitetype %in% c("Foot  Edema", 
+        "Foot  Swelling", 
+        "Hand/Finger  Edema", 
+        "Hand/Finger  Inflammation",
+        "Hand/Finger  Numbness",
+        "Leg/Thigh/Calf  Swelling",
+        "Extremities  Edema",
+        "Foot  Other",
+        "Arm  Edema",
+        "Musculoskeletal  Swelling")] = 
+  "Swelling/edema"
+aecategory[aesitetype %in% c("AST/SGOT", "Direct bilirubin",
+      "Total bilirubin", "Alanine Amino Transferase")] = 
+  "Abnormal liver function"
+aecategory[aesitetype %in% c(" Fainting", "Calcium", 
+      "Other test", 
+      "Low CD4 count",
+      "Breast cancer",
+      "Bone marrow  Other",
+      "Creatinine clearance", 
+      " High Blood Pressure", "Potassium",
+      "Fractured hip",
+      "Fasting total cholesterol",
+      "Increased blood pressure",
+      "Leg/Thigh/Calf  Rash, non-allergic",
+      "Respiratory  Respiratory System Dysfunction", 
+      "Lung  Respiratory System Dysfunction",
+      "Neurologic  Sleeping Problems",
+      "Nose/Sinus/Larynx/Pharynx/Trachea  Congestion", 
+      "Psychologic/Emotional  Confusion", 
+      "Psychologic/Emotional  Depression", 
+      "Psychologic/Emotional  Lethargy",
+      "Neurologic  Neurologic Dysfunction",
+      "Creatinine", "Multiple sites  Fever",
+      "Foot  Itchiness", "Mouth  Dryness",
+      "Multiple sites  Other",
+      " Mental Status Changes, Psychiatric",
+      " Low Blood Pressure",
+      "Hemoglobin",
+      "Foot Osteomyelitis",
+      " Fatigue", "Abdomen/Groin/Pelvis Skin cancer")] = 
+  "Miscellaneous"
+
+aedat$aecat = aecategory[match(aedat$aesitetype, aesitetype)] 
+aedat$aecat[is.na(aedat$aecat)] = "To be resolved"   # All resolved 5/29/2021
+
+# aedat[is.na(aedat$aecat), c("hnrcid", "visit", "aesitetype", "avevlbc", "avscode")]
+# Multiple sites Other = Misc - high BP!
+# Multiple sites pain = Musculo-sk pain
+# Foot Other = Swelling/edema
+# Bone marrow = Misc (BP!)
+# 
+@
+
+
+
+\subsection{Grades 3 Or 4 And Serious Adverse Events}
+
+Table~\ref{Table:54} lists the individual grade 3-4 and/or serious adverse events (SAE).  There were no grade 4 adverse events and no deaths. Nine participants reported nine grade 3 and/or SAEs (including one grade 1 and one grade 2 SAE). Of the nine events, five were treatment-emergent (not present at study baseline).  The events are described in detail below:
+
+\begin{enumerate}
+\item 11481 {(Imm)}. Merkel cell carcinoma on buttock reported at week 12 visit.  The participant underwent two months of radiation therapy, and was reported cancer-free at week 24.
+\item 11451 {(Imm)}. Grade 3 bilirubin reported at week 24 visit.  It went down to grade 2 at week 48 visit.
+\item 19910 {(Imm)}. Grade 3 glucose determined at week 12 visit.  A repeat test one week later reduced it to grade 2.  At week 24 it further downgraded to grade 1.
+\item T0738 {(Imm)}.  Grade 3 glucose at week 4.  Downgraded to grade 2 on a repeat sample.  At subsequent visits through week 48 glucose was at grades 1-2.
+\item CA485 {(Imm)}. Grade 3 creatinine clearance emerging at week 4 visit, and maintained at week 24.  At week 48 it was downgraded to grade 2.
+\item 28291 {(Imm)}.  Grade 3 creatinine clearance emerging at week 24 visit.
+%\item 64311 {(Imm)}.  Stage 1 breast cancer diagnosed in June 2018, 3 months after week 24 visit.  Upgraded to stage 2-3+.  The participant is undergoing therapy.  Week 48 visit was delayed.
+\item 28383 {(Imm)}.  Grade 3 creatinine clearance emerging at week 4 visit.
+\item 28383 {(Imm)}. Grade 2 SAE: fractured hip.
+\item 28512 {(Imm)}.  Grade 3 non-fasting glucose emerging at week 4 visit.
+\item 29119 {(Imm)}. Grade 1 AE: stomach inflammation.  Possibly treatment-related.
+%\item T0814 {(Def)}.  Grade 3 fasting triglycerides emerging at week 28 visit.
+%\item 28511 {(Def)}. Grade 3 SAE: osteomyelitis of the right foot at week 36 visit.  It required amputation of the 3rd toe.  Due to diabetes and peripheral vascular disease.
+%\item 28511 {(Def)}. Grade 3 low hemoglobin at week 48 visit, due to slow GI bleed.  Not related to treatment.  
+%\item T0814 {(Def)}.  Grade 3 high blood pressure.  Participant did not take hypertension treatment due to living in multi-person facility. Not related to treatment.  
+\end{enumerate}
+
+<<label=tab54,echo=FALSE,results=tex>>=
+#############################################
+######## Chunk 25:  tab54. Grade 3-4 Adverse Events
+
+
+### Find unique ID/event types with grade 3
+### Investigate entire AE history for these subjects/event types, including resolution
+### Leave individual note for each case
+
+aegr34 = aedat[aedat$avgrade>=3 | aedat$avseris %in% 1:8, ]
+aegr34$emergent = ifelse(aegr34$avbasln, "No", "Yes")
+aegr34$serious = ifelse(aegr34$avseris %in% 1:8, "Yes", "No")
+aegr34 = aegr34[order(aegr34$arm, aegr34$hnrcid, as.numeric(as.character(aegr34$visit))), ]
+
+
+## How many unique PID/event types?
+aegr34$pstype = paste(aegr34$hnrcid, aegr34$aesitetype)
+pstype.list34 = unique(aegr34$pstype)  # 11 unique ID-event types 8/11/2024
+pstype.repeats34 = unique(aegr34$pstype[-match(pstype.list34, aegr34$pstype)]) # 6 repeats
+aegr34.dupl = aegr34[aegr34$pstype %in% pstype.repeats34, ]
+
+### Remove duplicates from aegr34.  Keep the ones with max grade
+aegr34 = aegr34[order(aegr34$pstype, -aegr34$avgrade, decreasing=TRUE), ]
+aegr342 = aegr34[nrow(aegr34):1,]  # in aegr342, the rows to be selected (max grade) appear first
+aegr341 = aegr342[match(pstype.list34, aegr342$pstype), ]
+aegr341$arm2 = ifelse(aegr341$arm=="Deferred", "Def", "Imm")
+aegr341 = aegr341[order(as.Date(aegr341$vischedz, "%m/%d/%Y")),]
+
+
+### Some individual changes per AP's email 5/8/2020
+aegr341$emergent[aegr341$hnrcid=="T0814" & aegr341$visit=="36"] = "No"
+# aegr341$emergent[aegr341$hnrcid=="28512" & aegr341$aesitetype=="Fasting glucose"] = "No"
+aegr341 = aegr341[!(aegr341$hnrcid=="28512" & aegr341$aesitetype=="Fasting glucose"),]
+
+tab54 = aegr341[, c("hnrcid", "arm2", "avgrade", "aesitetype", "related", "emergent", "serious" )]
+### TO BE EDITED FOR EVERY REPORT
+### EDITED 6/6/2021:
+tab54$direction = ""
+tab54$direction[c(1:2,4:7,9)] = ": elevated"
+tab54$aesitetype = paste(tab54$aesitetype, tab54$direction, sep="")
+tab54$direction = NULL
+
+
+### Deal with ID = Imm9
+# tab54$related[tab54$ID=="Imm9"] = "Possibly"
+# tab54$aesitetype[tab54$ID=="Imm9"] = "Breast cancer"
+
+colnames(tab54)=c("ID", "Arm", "Gr", "Adverse Event", "Study Related", "Emerging", "SAE")
+print(xtable(tab54, align = "|l|c|c|c|l|l|l|l|", 
+             caption="Individual grade 3 or higher, and serious adverse events (SAE).",
+    label = "Table:54"), 
+    caption.placement="top",
+    size="normalsize",
+    include.rownames = FALSE, 
+    include.colnames = TRUE, 
+    sanitize.text.function = function(x) {x}
+    )
+@
+
+
+
+\subsection{Grade 1-3 Adverse Events By Type Of Event}
+
+Table~\ref{Table:52} summarizes all emergent grade 1-2 adverse events and all grade 3+ adverse events, by type and grade of event, and overall.
+Thirty-six participants (all in the Immediate arm) reported a total of 122 events.  The individual events are listed separately in Table~\ref{Table:56}.  There were 8 grade 3 adverse events, no grade 4 adverse events, and no deaths.
+
+
+
+<<label=tab52,echo=FALSE,results=tex>>=
+###################################
+######## Chunk 26: Adverse Events by Type of Event
+
+### Do not count twice events that recur at later visits; only keep visit with highest AE grade
+## aedat relevant columns: 1:6, 73:84, 102:109 [110]
+aedat$pstype = paste(aedat$hnrcid, aedat$aesitetype)
+pstype.list = unique(aedat$pstype)  # 126 unique ID-event types
+pstype.repeats = unique(aedat$pstype[-match(pstype.list, aedat$pstype)]) # 117 repeats
+aedat.dupl = aedat[aedat$pstype %in% pstype.repeats, ]
+pid.dupl = unique(aedat.dupl$hnrcid)
+
+### Remove duplicates from aedat.  Keep the ones with max grade
+aedat = aedat[order(aedat$pstype, -aedat$avgrade, decreasing=TRUE), ]
+aedat2 = aedat[nrow(aedat):1,]  # in aedat2, the rows to be selected (max grade) appear first
+aedat1 = aedat2[match(pstype.list, aedat2$pstype), ]
+
+## fasting duplicates non-fasting glucose in this gr 3 event:
+aedat1 = aedat1[!(aedat1$hnrcid=="28512" & aedat1$aesitetype=="Fasting glucose"),]
+
+tab = table(aedat1$aecat)
+aecat = names(tab)
+aecat = aecat[order(tab, decreasing=TRUE)]
+tab52 = data.frame(aecat = aecat)
+tab52$total = tab[match(tab52$aecat, names(tab))]
+tab = table(aedat1$aecat[aedat1$avgrade==1])
+tab52$grade1 = tab[match(tab52$aecat, names(tab))]
+tab = table(aedat1$aecat[aedat1$avgrade==2])
+tab52$grade2 = tab[match(tab52$aecat, names(tab))]
+tab = table(aedat1$aecat[aedat1$avgrade==3])
+tab52$grade3 = tab[match(tab52$aecat, names(tab))]
+
+# length(unique(aedat1$hnrcid)) ## 36 participants
+# what treatment arms?
+pid.ae = unique(aedat1$hnrcid)
+# table(aedat$arm[match(pid.ae, aedat$hnrcid)]) # def = 20; imm = 32
+
+colnames(tab52) =  c("Type of event","Grades 1-3", "Grade 1", "Grade 2", "Grade 3")
+
+print(xtable(tab52, align = "|l|l|c|ccc|", 
+    caption="Summary of emergent grade 1-2, and all grade 3+ adverse events, by type and grade of event.",
+    label = "Table:52"), 
+    caption.placement="top",
+    size="normalsize",
+    include.rownames = FALSE, 
+    include.colnames = TRUE, 
+    sanitize.text.function = function(x) {x}
+    )
+@
+
+
+
+\subsection{All Adverse Events}
+
+Table~\ref{Table:56} lists all adverse events individually.  
+
+
+
+<<label=tab56,echo=FALSE,results=tex>>=
+######## Chunk 27: List of all Adverse Events
+
+aedat11 = aedat1[order(aedat1$arm=="Deferred", aedat1$hnrcid, as.numeric(as.character(aedat1$visit))), ]
+aedat11$arm2 = ifelse(aedat11$arm=="Deferred", "Def", "Imm")
+
+tab56 = aedat11[, c("hnrcid", "arm2", "visit", "avgrade", "aesitetype", "related")]
+# tab56[tab56$ID=="Imm19" & tab56$visit==12, "aesitetype"] = "Merkel cell carcinoma on buttock"
+# tab56[tab56$ID=="Imm14" & tab56$visit==24 & tab56$aesitetype=="Other  Other", "aesitetype"] = "Carpal tunnel syndrome"
+# tab56[tab56$ID=="Imm8" & tab56$aesitetype=="Musculoskeletal TBD", "aesitetype"] = "Musculoskeletal Pain"
+
+colnames(tab56)=c("ID", "Arm", "Week", "Grade", "Adverse Event", "Related")
+
+print(xtable(tab56[1:65,], align = "|l|l|l|l|l|l|l|", 
+             caption="Individual adverse events: emergent grade 1-2, and all grade 3+ adverse events are reported.",
+    label = "Table:56"), 
+    caption.placement="top",
+    size="small",
+    include.rownames = FALSE, 
+    include.colnames = TRUE, 
+    sanitize.text.function = function(x) {x}
+    )
+
+
+print(xtable(tab56[66:130,], align = "|l|l|l|l|l|l|l|", 
+             caption="(continued): Individual adverse events: emergent grade 1-2, and all grade 3+ adverse events.",
+    label = "Table:56.2"), 
+    caption.placement="top",
+    size="small",
+    include.rownames = FALSE, 
+    include.colnames = TRUE, 
+    sanitize.text.function = function(x) {x}
+    )
+
+if(FALSE){
+print(xtable(tab56[131:195,], align = "|l|l|l|l|l|l|l|", 
+             caption="(continued): Individual adverse events: emergent grade 1-2, and all grade 3+ adverse events.",
+    label = "Table:56.3"), 
+    caption.placement="top",
+    size="small",
+    include.rownames = FALSE, 
+    include.colnames = TRUE, 
+    sanitize.text.function = function(x) {x}
+    )
+
+print(xtable(tab56[196:dim(tab56)[1],], align = "|l|l|l|l|l|l|l|", 
+             caption="(continued): Individual adverse events: emergent grade 1-2, and all grade 3+ adverse events.",
+    label = "Table:56.3?"), 
+    caption.placement="top",
+    size="small",
+    include.rownames = FALSE, 
+    include.colnames = TRUE, 
+    sanitize.text.function = function(x) {x}
+    )
+}
+
+@
+\end{document}
+
